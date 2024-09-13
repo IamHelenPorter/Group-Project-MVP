@@ -14,27 +14,27 @@ SET foreign_key_checks = 1;
 --
 
 CREATE TABLE `appointments`(
-    `appointment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `appointment_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NULL,
     `doctor_id` INT NOT NULL,
     `start_time` DATETIME NOT NULL,
     `status` ENUM(
-        '"booked"',
-        '"cancelled"',
-        '"completed"'
+        'booked',
+        'cancelled',
+        'completed'
     ) NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL
 );
 CREATE TABLE `hospital`(
-    `hospital_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `hospital_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(255) NOT NULL,
     `address` VARCHAR(255) NOT NULL,
     `emergency` BOOLEAN NULL,
     `departments` VARCHAR(255) NOT NULL
 );
 CREATE TABLE `user`(
-    `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
     `username` VARCHAR(255) NOT NULL,
@@ -47,12 +47,14 @@ CREATE TABLE `user`(
     `image` VARCHAR(255) NULL
 );
 CREATE TABLE `doctor`(
-    `doctor_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `doctor_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
     `speciality` VARCHAR(255) NOT NULL,
     `hospital_id` INT NOT NULL,
     `qualifications` VARCHAR(255) NOT NULL
 );
+
+
 ALTER TABLE
     `doctor` ADD CONSTRAINT `doctor_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `user`(`user_id`);
 ALTER TABLE
