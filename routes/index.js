@@ -16,6 +16,8 @@ router.get('/doctor', async (req, res) => {
   }
 })
 
+
+
 // router.get('/doctor/:id', async (req, res) => {
 //   const id = req.params.id; 
 //   try {
@@ -29,7 +31,7 @@ router.get('/doctor', async (req, res) => {
 router.post('/doctor', async (req, res) => {
   const { user_id, speciality, hospital_id, qualifications } = req.body;
   const insertDoctor = `INSERT INTO doctor (user_id, speciality, hospital_id, qualifications)
-  VALUES ('${user_id}', '${speciality}', '${hospital_id}', '${qualifications}');`;
+  VALUES (${user_id}, '${speciality}', ${hospital_id}, '${qualifications}');`;
   try {
     await db(insertDoctor);
     const doctorResults = await db(`SELECT * FROM doctor WHERE user_id = ${user_id};`);
@@ -56,10 +58,46 @@ router.delete('/doctor/:id', async (req, res) => {
   }
 })
 
+//DO WE WANT TO GET ALL FROM DOCTOR_ID, OR USER_ID. OR BOTH,
+// AND DO WE NEED SEPARATE ROUTES FOR BOTH
 router.get('/appointments', async (req, res) => {
   try {
     let results = await db(`SELECT * FROM appointments`);
     res.send(results.data)
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+})
+
+
+// GETS THIS ERROR MESSAGE: Warning: To load an ES module, set "type": "module" in the package.json or use the .mjs extension.
+// router.post('/appointments', async (req, res) => {
+//   const { user_id, doctor_id, start_time, status } = req.body;
+//   const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status, created_at, updated_at)
+//    VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
+// });
+
+// try {
+//   await db(insertAppointment);
+//   const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
+//   res.send(results.data)
+// } catch (err) {
+//   res.status(500).send({error: err.message});
+// }
+
+
+//DO WE NEED A PUT ROUTE TO UPDATE APPOINTMENTS??
+
+
+
+//HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
+router.delete('/appointments/:id', async (req, res) => {
+  const { id } = req.params;
+  const appointmentId = Number(id)
+  try {
+    await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
+    const results = await db(`SELECT * FROM appointments;`);
+    res.send(results.data);
   } catch (err) {
     res.status(500).send({error: err.message});
   }
