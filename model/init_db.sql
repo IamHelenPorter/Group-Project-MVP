@@ -13,6 +13,9 @@ SET foreign_key_checks = 1;
 -- Create Tables
 --
 
+
+
+
 CREATE TABLE `user`(
     `user_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `first_name` VARCHAR(255) NOT NULL,
@@ -34,6 +37,24 @@ CREATE TABLE `doctor`(
     `hospital_id` INT NOT NULL,
     `qualifications` VARCHAR(255) NOT NULL
 );
+ALTER TABLE
+    `doctor` ADD CONSTRAINT `doctor_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `user`(`user_id`);
+
+ALTER TABLE
+    `appointments` ADD CONSTRAINT `appointments_doctor_id_foreign` FOREIGN KEY(`doctor_id`) REFERENCES `doctor`(`doctor_id`);
+ALTER TABLE
+    `appointments` ADD CONSTRAINT `appointments_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `user`(`user_id`);
+ALTER TABLE
+    `doctor` ADD CONSTRAINT `doctor_hospital_id_foreign` FOREIGN KEY(`hospital_id`) REFERENCES `hospital`(`hospital_id`);
+
+
+
+
+
+
+
+
+
 
 
 CREATE TABLE `hospital`(
