@@ -2,13 +2,32 @@ var express = require('express');
 var router = express.Router();
 
 const db = require("../model/helper");
-
+var bcrpyt =require("bcrypt");
+const saltRounds = 10
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.send({ title: 'Express' });
 });
 
+
+
+router.post('/register', async (req, res) => {
+  const {first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image} = req.body;
+
+  try {
+      const hash = await bcrpyt.hash(password, saltRounds);
+
+    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image)
+       VALUES ('${first_name}', '${last_name}', '${username}', '${hash}', '${email}', '${role}', '${created_at}', '${updated_at}', '${date_of_birth}', '${image}');`);
+
+    const results = await db("SELECT * FROM user;");
+    res.send(results.data);
+
+  } catch (err) {
+      res.status(400).send({ message: err.message });
+  }
+})
 
 router.get('/doctor', async (req, res) => {
   try {
@@ -118,22 +137,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-//WORKS
-router.post('/users', async (req, res) => {
-  let {first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image} = req.body;
 
-  try {
-    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image) VALUES ('${first_name}', '${last_name}', '${username}', '${password}', '${email}', '${role}', '${created_at}', '${updated_at}', '${date_of_birth}', '${image}');`);
-
-    const results = await db("SELECT * FROM user;");
-    console.log(`result`)
-    res.send(results.data);
-
-  } catch (err) {
-    console.log(`error`, err)
-    res.send(err)
-  }
-})
 
 //WORKS
 router.get("/users/:id", async (req, res) => {
