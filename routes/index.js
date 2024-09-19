@@ -77,14 +77,13 @@ router.post('/doctor', async (req, res) => {
   }
 })
 
-// HOW CAN I CHECK THAT DOCTOR_ID EXISTS
+
 router.delete('/doctor/:id', async (req, res) => {
   const { id } = req.params;
   const doctorId = Number(id)
   try {
     await db(`DELETE FROM doctor WHERE doctor_id = ${doctorId};`);
-    const results = await db(`SELECT * FROM doctor;`);
-    res.send(results.data);
+    res.send(`Doctor successfully deleted.`);
   } catch (err) {
     res.status(500).send({error: err.message});
   }
