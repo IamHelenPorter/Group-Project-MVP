@@ -40,15 +40,18 @@ router.get('/doctor', async (req, res) => {
 
 
 
-// router.get('/doctor/:id', async (req, res) => {
-//   const id = req.params.id; 
-//   try {
-//     const results = await db(`SELECT * FROM doctor WHERE doctor_id = ${id}`);
-//     // NEED TO COMBINE RESULTS TO SEND USER FIRST_NAME AND LAST_NAME AS WELL AS DOCTOR INFO
-//   } catch (err) {
-//     res.status(500).send({error: err.message});
-//   }
-// })
+router.get('/doctor/:id', async (req, res) => {
+  const id = req.params.id; 
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+  FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
+  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE user.user_id = ${id};`
+  try {
+    const results = await db(sql);
+    res.send(results.data);
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+})
 
 router.post('/doctor', async (req, res) => {
   const { user_id, speciality, hospital_id, qualifications } = req.body;
