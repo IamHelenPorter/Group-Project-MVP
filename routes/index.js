@@ -58,13 +58,20 @@ router.post('/doctor', async (req, res) => {
   const insertDoctor = `INSERT INTO doctor (user_id, speciality, hospital_id, qualifications)
   VALUES (${user_id}, '${speciality}', ${hospital_id}, '${qualifications}');`;
   try {
+
+    const existingDoctor = await db(`SELECT * FROM doctor WHERE user_id = ${user_id};`);
+    
+    if (existingDoctor.data.length > 0) {
+      return res.status(400).send({ error: "Doctor with this user_id already exists." });
+    } else {
+
     await db(insertDoctor);
-    const doctorResults = await db(`SELECT * FROM doctor WHERE user_id = ${user_id};`);
-    // const userResults = await db(`SELECT * FROM user WHERE user_id = ${user_id};`);
-    // const combinedResults = {...doctorResults, userResults.data.first_name, userResults.data.last_name };
-    // res.send(combinedResults)
-       // NEED TO COMBINE RESULTS TO SEND USER FIRST_NAME AND LAST_NAME AS WELL AS DOCTOR INFO
-    res.send(doctorResults)
+    const doctorResults = await db(`SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+      FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id
+       LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE user.user_id = ${user_id};`);
+
+    res.send(doctorResults.data)
+    }
   } catch (err) {
     res.status(500).send({error: err.message});
   }
