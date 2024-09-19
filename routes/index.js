@@ -91,30 +91,34 @@ router.delete('/doctor/:id', async (req, res) => {
 
 //DO WE WANT TO GET ALL FROM DOCTOR_ID, OR USER_ID. OR BOTH,
 // AND DO WE NEED SEPARATE ROUTES FOR BOTH
-router.get('/appointments', async (req, res) => {
+router.get('/appointments/:userid', async (req, res) => {
+  const {userid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments`);
+    let results = await db(`SELECT * FROM appointments WHERE user_id = ${userid}`);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
   }
-})
+});
 
 
-// GETS THIS ERROR MESSAGE: Warning: To load an ES module, set "type": "module" in the package.json or use the .mjs extension.
-// router.post('/appointments', async (req, res) => {
-//   const { user_id, doctor_id, start_time, status } = req.body;
-//   const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status, created_at, updated_at)
-//    VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
-// });
 
-// try {
-//   await db(insertAppointment);
-//   const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
-//   res.send(results.data)
-// } catch (err) {
-//   res.status(500).send({error: err.message});
-// }
+
+// ERROR SAYING NO VALUE FOR CREATED_AT AND UPDATED_AT
+router.post('/appointments', async (req, res) => {
+  const { user_id, doctor_id, start_time, status } = req.body;
+  const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status)
+   VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
+   try {
+    await db(insertAppointment);
+    const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
+    res.send(results.data)
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
+
+
 
 
 //DO WE NEED A PUT ROUTE TO UPDATE APPOINTMENTS??
