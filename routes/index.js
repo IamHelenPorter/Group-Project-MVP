@@ -89,9 +89,8 @@ router.delete('/doctor/:id', async (req, res) => {
   }
 })
 
-//DO WE WANT TO GET ALL FROM DOCTOR_ID, OR USER_ID. OR BOTH,
-// AND DO WE NEED SEPARATE ROUTES FOR BOTH
-router.get('/appointments/:userid', async (req, res) => {
+//GET ALL APPOINMENTS THAT A SPECIFIC USER HAS
+router.get('/appointments/user/:userid', async (req, res) => {
   const {userid} = req.params;
   try {
     let results = await db(`SELECT * FROM appointments WHERE user_id = ${userid}`);
@@ -101,7 +100,16 @@ router.get('/appointments/:userid', async (req, res) => {
   }
 });
 
-
+// GET ALL APPOINMENTS BOOKED WITH A SPECIFIC DOCTOR
+router.get('/appointments/doctor/:doctorid', async (req, res) => {
+  const {doctorid} = req.params;
+  try {
+    let results = await db(`SELECT * FROM appointments WHERE user_id = ${doctorid}`);
+    res.send(results.data)
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
 
 
 // ERROR SAYING NO VALUE FOR CREATED_AT AND UPDATED_AT
