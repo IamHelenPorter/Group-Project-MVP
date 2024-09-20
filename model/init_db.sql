@@ -46,14 +46,6 @@ ALTER TABLE
 
 
 
-
-
-
-
-
-
-
-
 CREATE TABLE `hospital`(
     `hospital_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(255) NOT NULL,
