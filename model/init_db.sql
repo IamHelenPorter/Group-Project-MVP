@@ -13,9 +13,6 @@ SET foreign_key_checks = 1;
 -- Create Tables
 --
 
-
-
-
 CREATE TABLE `user`(
     `user_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `first_name` VARCHAR(255) NOT NULL,
@@ -37,7 +34,6 @@ CREATE TABLE `doctor`(
     `hospital_id` INT NOT NULL,
     `qualifications` VARCHAR(255) NOT NULL
 );
-
 
 CREATE TABLE `hospital`(
     `hospital_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
