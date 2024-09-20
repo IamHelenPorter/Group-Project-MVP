@@ -13,13 +13,13 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/register', async (req, res) => {
-  const {first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image} = req.body;
+  const {first_name, last_name, username, password, email, role, date_of_birth, image} = req.body;
 
   try {
       const hash = await bcrpyt.hash(password, saltRounds);
 
-    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image)
-       VALUES ('${first_name}', '${last_name}', '${username}', '${hash}', '${email}', '${role}', '${created_at}', '${updated_at}', '${date_of_birth}', '${image}');`);
+    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, date_of_birth, image)
+       VALUES ('${first_name}', '${last_name}', '${username}', '${hash}', '${email}', '${role}', '${date_of_birth}', '${image}');`);
 
     const results = await db("SELECT * FROM user;");
     res.send(results.data);
