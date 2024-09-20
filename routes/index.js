@@ -29,6 +29,34 @@ router.post('/register', async (req, res) => {
   }
 })
 
+// POST: User login
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Check if the user exists
+    const results = await db(`SELECT * FROM user WHERE username = '${username}';`);
+    
+    if (results.data.length === 0) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    const user = results.data[0];
+
+    // the provided password = the hashed password ?
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      res.send({ message: 'Login successful', user });
+    } else {
+      res.status(401).send({ message: 'Incorrect password' });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
+
 //GET ALL DOCTORS INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
 router.get('/doctor', async (req, res) => {
   const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
