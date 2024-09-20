@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const db = require("../model/helper");
-var bcrpyt =require("bcrypt");
+var bcrypt =require("bcrypt");
 const saltRounds = 10
 
 /* GET home page. */
@@ -11,15 +11,15 @@ router.get('/', function(req, res, next) {
 });
 
 
-
+//POST NEW USER
 router.post('/register', async (req, res) => {
-  const {first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image} = req.body;
+  const {first_name, last_name, username, password, email, role, date_of_birth, image} = req.body;
 
   try {
-      const hash = await bcrpyt.hash(password, saltRounds);
+      const hash = await bcrypt.hash(password, saltRounds);
 
-    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, created_at, updated_at, date_of_birth, image)
-       VALUES ('${first_name}', '${last_name}', '${username}', '${hash}', '${email}', '${role}', '${created_at}', '${updated_at}', '${date_of_birth}', '${image}');`);
+    await db(`INSERT INTO user (first_name, last_name, username, password, email, role, date_of_birth, image)
+       VALUES ('${first_name}', '${last_name}', '${username}', '${hash}', '${email}', '${role}', '${date_of_birth}', '${image}');`);
 
     const results = await db("SELECT * FROM user;");
     res.send(results.data);
@@ -29,83 +29,125 @@ router.post('/register', async (req, res) => {
   }
 })
 
+//GET ALL DOCTORS INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
 router.get('/doctor', async (req, res) => {
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+  FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
+  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id;`
   try {
-    let results = await db(`SELECT * FROM doctor;`);
+    let results = await db(sql);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
   }
-})
+});
+
+
+//GET DOCTOR BY ID INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
+router.get('/doctor/:id', async (req, res) => {
+  const id = req.params.id; 
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+  FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
+  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE user.user_id = ${id};`
+  try {
+    const results = await db(sql);
+    res.send(results.data);
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
+
+//GET ALL DOCTORS BY HOSPITAL ID
+router.get('/doctor/hospital/:id', async (req, res) => {
+  const { id } = req.params;
+  const sql = `SELECT doctor.*, user.first_name, user.last_name 
+  FROM doctor LEFT JOIN user ON doctor.user_id = user.user_id 
+  WHERE doctor.hospital_id = ${id};`
+  try {
+    const results = await db(sql);
+    res.send(results.data);
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
 
 
 
-// router.get('/doctor/:id', async (req, res) => {
-//   const id = req.params.id; 
-//   try {
-//     const results = await db(`SELECT * FROM doctor WHERE doctor_id = ${id}`);
-//     // NEED TO COMBINE RESULTS TO SEND USER FIRST_NAME AND LAST_NAME AS WELL AS DOCTOR INFO
-//   } catch (err) {
-//     res.status(500).send({error: err.message});
-//   }
-// })
-
+//POST NEW DOCTOR
 router.post('/doctor', async (req, res) => {
   const { user_id, speciality, hospital_id, qualifications } = req.body;
   const insertDoctor = `INSERT INTO doctor (user_id, speciality, hospital_id, qualifications)
   VALUES (${user_id}, '${speciality}', ${hospital_id}, '${qualifications}');`;
   try {
+
+    const existingDoctor = await db(`SELECT * FROM doctor WHERE user_id = ${user_id};`);
+    
+    if (existingDoctor.data.length > 0) {
+      return res.status(400).send({ error: "Doctor with this user_id already exists." });
+    } else {
+
     await db(insertDoctor);
-    const doctorResults = await db(`SELECT * FROM doctor WHERE user_id = ${user_id};`);
-    // const userResults = await db(`SELECT * FROM user WHERE user_id = ${user_id};`);
-    // const combinedResults = {...doctorResults, userResults.data.first_name, userResults.data.last_name };
-    // res.send(combinedResults)
-       // NEED TO COMBINE RESULTS TO SEND USER FIRST_NAME AND LAST_NAME AS WELL AS DOCTOR INFO
-    res.send(doctorResults)
+    const doctorResults = await db(`SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+      FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id
+       LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE user.user_id = ${user_id};`);
+
+    res.send(doctorResults.data)
+    }
   } catch (err) {
     res.status(500).send({error: err.message});
   }
 })
 
-// HOW CAN I CHECK THAT DOCTOR_ID EXISTS
+//DELETE DOCTOR BY ID
 router.delete('/doctor/:id', async (req, res) => {
   const { id } = req.params;
   const doctorId = Number(id)
   try {
     await db(`DELETE FROM doctor WHERE doctor_id = ${doctorId};`);
-    const results = await db(`SELECT * FROM doctor;`);
-    res.send(results.data);
+    res.send(`Doctor successfully deleted.`);
   } catch (err) {
     res.status(500).send({error: err.message});
   }
 })
 
-//DO WE WANT TO GET ALL FROM DOCTOR_ID, OR USER_ID. OR BOTH,
-// AND DO WE NEED SEPARATE ROUTES FOR BOTH
-router.get('/appointments', async (req, res) => {
+//GET ALL APPOINMENTS THAT A SPECIFIC USER HAS
+router.get('/appointments/user/:userid', async (req, res) => {
+  const {userid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments`);
+    let results = await db(`SELECT * FROM appointments WHERE user_id = ${userid}`);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
   }
-})
+});
+
+// GET ALL APPOINMENTS BOOKED WITH A SPECIFIC DOCTOR
+router.get('/appointments/doctor/:doctorid', async (req, res) => {
+  const {doctorid} = req.params;
+  try {
+    let results = await db(`SELECT * FROM appointments WHERE user_id = ${doctorid}`);
+    res.send(results.data)
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
 
 
-// GETS THIS ERROR MESSAGE: Warning: To load an ES module, set "type": "module" in the package.json or use the .mjs extension.
-// router.post('/appointments', async (req, res) => {
-//   const { user_id, doctor_id, start_time, status } = req.body;
-//   const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status, created_at, updated_at)
-//    VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
-// });
+// POST APPOINTMENT
+router.post('/appointments', async (req, res) => {
+  const { user_id, doctor_id, start_time, status } = req.body;
+  const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status)
+   VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
+   try {
+    await db(insertAppointment);
+    const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
+    res.send(results.data)
+  } catch (err) {
+    res.status(500).send({error: err.message});
+  }
+});
 
-// try {
-//   await db(insertAppointment);
-//   const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
-//   res.send(results.data)
-// } catch (err) {
-//   res.status(500).send({error: err.message});
-// }
+
 
 
 //DO WE NEED A PUT ROUTE TO UPDATE APPOINTMENTS??
@@ -113,6 +155,8 @@ router.get('/appointments', async (req, res) => {
 
 
 //HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
+//NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
+// NAME BY USER_ID
 router.delete('/appointments/:id', async (req, res) => {
   const { id } = req.params;
   const appointmentId = Number(id)
@@ -125,7 +169,7 @@ router.delete('/appointments/:id', async (req, res) => {
   }
 })
 
-//WORKS
+//GET ALL USERS
 router.get('/users', async (req, res) => {
   try {
     const results = await db("SELECT * FROM user;");
@@ -139,7 +183,7 @@ router.get('/users', async (req, res) => {
 
 
 
-//WORKS
+//GET USER BY ID
 router.get("/users/:id", async (req, res) => {
 
   let id = req.params.id;
@@ -155,7 +199,7 @@ router.get("/users/:id", async (req, res) => {
 });
 
 
-//WORKS
+//DELETE USER BY ID
 router.delete("/users/:id", async (req, res) => {
 
   let id = req.params.id;
@@ -174,7 +218,7 @@ router.delete("/users/:id", async (req, res) => {
 
 
 //ENDPOINTS FOR HOSPITAL TABLE
-
+//GET ALL HOSPITALS
 router.get('/hospitals', async (req, res) => {
   try {
     const results = await db("SELECT * FROM hospital;");
@@ -186,6 +230,7 @@ router.get('/hospitals', async (req, res) => {
   }
 });
 
+//POST NEW HOSPITAL
 router.post('/hospitals', async (req, res) => {
   let {name, address, emergency, departments} = req.body;
 
@@ -202,6 +247,7 @@ router.post('/hospitals', async (req, res) => {
   }
 });
 
+//GET HOSPITAL BY ID
 router.get("/hospitals/:id", async (req, res) => {
 
   let id = req.params.id;
@@ -216,11 +262,12 @@ router.get("/hospitals/:id", async (req, res) => {
   }
 });
 
+//DELETE HOSPITAL BY ID
 router.delete("/hospitals/:id", async (req, res) => {
 
   let id = req.params.id;
 
-  try { // delete by id
+  try { 
 
     await db(`DELETE FROM hospital WHERE hospital_id = ${id};`)
 
