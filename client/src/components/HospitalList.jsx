@@ -29,4 +29,6 @@ function HospitalList() {
   );
 }
 
+
 export default HospitalList;
+

@@ -138,7 +138,7 @@ router.delete('/doctor/:id', async (req, res) => {
   }
 })
 
-//GET ALL APPOINMENTS THAT A SPECIFIC USER HAS
+//GET ALL APPOINTMENTS THAT A SPECIFIC USER HAS
 router.get('/appointments/user/:userid', async (req, res) => {
   const {userid} = req.params;
   try {
@@ -147,6 +147,7 @@ router.get('/appointments/user/:userid', async (req, res) => {
        LEFT JOIN user ON doctor.user_id = user.user_id
         LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
         WHERE appointments.user_id = ${userid};`);
+
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
@@ -160,6 +161,7 @@ router.get('/appointments/doctor/:doctorid', async (req, res) => {
     let results = await db(`SELECT appointments.*, user.first_name, user.last_name FROM appointments
        LEFT JOIN user ON appointments.user_id = user.user_id
         WHERE appointments.doctor_id = ${doctorid};`);
+
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
@@ -185,6 +187,12 @@ router.post('/appointments', async (req, res) => {
 
 
 //DO WE NEED A PUT ROUTE TO UPDATE APPOINTMENTS??
+
+
+
+//HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
+//NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
+// NAME BY USER_ID
 
 //DELETE APPOINTMENT IN USER & DOCTOR PROFILE
 router.delete('/appointments/:userid/:id', async (req, res) => {
