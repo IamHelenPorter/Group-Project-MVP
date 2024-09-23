@@ -138,11 +138,15 @@ router.delete('/doctor/:id', async (req, res) => {
   }
 })
 
-//GET ALL APPOINMENTS THAT A SPECIFIC USER HAS
+//GET ALL APPOINTMENTS THAT A SPECIFIC USER HAS
 router.get('/appointments/user/:userid', async (req, res) => {
   const {userid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments WHERE user_id = ${userid}`);
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospital.name 
+       FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+       LEFT JOIN user ON doctor.user_id = user.user_id
+        LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
+        WHERE appointments.user_id = ${userid};`);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
@@ -153,7 +157,9 @@ router.get('/appointments/user/:userid', async (req, res) => {
 router.get('/appointments/doctor/:doctorid', async (req, res) => {
   const {doctorid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments WHERE user_id = ${doctorid}`);
+    let results = await db(`SELECT appointments.*, user.first_name, user.last_name FROM appointments
+       LEFT JOIN user ON appointments.user_id = user.user_id
+        WHERE appointments.doctor_id = ${doctorid};`);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
@@ -185,6 +191,8 @@ router.post('/appointments', async (req, res) => {
 //HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
 //NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
 // NAME BY USER_ID
+
+//make this /appointments/:userid/:id 
 router.delete('/appointments/:id', async (req, res) => {
   const { id } = req.params;
   const appointmentId = Number(id)
