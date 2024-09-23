@@ -1,11 +1,15 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './components/Homepage.jsx';
+
+import HomePage from './components/HomePage.jsx';
+
 import HospitalList from './components/HospitalList.jsx';
 import DoctorList from './components/DoctorList.jsx';
 import SpecialtyList from './components/SpecialtyList.jsx';
 import Registration from './components/Registration.jsx';
 import Login from './components/Login.jsx';
+
 import ProfilePage from './PatientProfile/ProfilePage.jsx'
+
 
 function App() {
   return (
@@ -18,9 +22,10 @@ function App() {
           <Route path="/specialties" element={<SpecialtyList />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/login" element={<Login />} />
+
           <Route path="/profile" element={<ProfilePage />} />
           
-          
+
         </Routes>
       </div>
     </Router>
