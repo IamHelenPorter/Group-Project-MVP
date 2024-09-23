@@ -29,6 +29,34 @@ router.post('/register', async (req, res) => {
   }
 })
 
+// POST: User login
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Check if the user exists
+    const results = await db(`SELECT * FROM user WHERE username = '${username}';`);
+    
+    if (results.data.length === 0) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    const user = results.data[0];
+
+    // the provided password = the hashed password ?
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      res.send({ message: 'Login successful', user });
+    } else {
+      res.status(401).send({ message: 'Incorrect password' });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
+
 //GET ALL DOCTORS INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
 router.get('/doctor', async (req, res) => {
   const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
@@ -110,22 +138,30 @@ router.delete('/doctor/:id', async (req, res) => {
   }
 })
 
-//GET ALL APPOINMENTS THAT A SPECIFIC USER HAS
+//GET ALL APPOINTMENTS THAT A SPECIFIC USER HAS
 router.get('/appointments/user/:userid', async (req, res) => {
   const {userid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments WHERE user_id = ${userid}`);
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospital.name 
+       FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+       LEFT JOIN user ON doctor.user_id = user.user_id
+        LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
+        WHERE appointments.user_id = ${userid};`);
+
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
   }
 });
 
-// GET ALL APPOINMENTS BOOKED WITH A SPECIFIC DOCTOR
+// GET ALL APPOINTMENTS BOOKED WITH A SPECIFIC DOCTOR
 router.get('/appointments/doctor/:doctorid', async (req, res) => {
   const {doctorid} = req.params;
   try {
-    let results = await db(`SELECT * FROM appointments WHERE user_id = ${doctorid}`);
+    let results = await db(`SELECT appointments.*, user.first_name, user.last_name FROM appointments
+       LEFT JOIN user ON appointments.user_id = user.user_id
+        WHERE appointments.doctor_id = ${doctorid};`);
+
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
@@ -157,17 +193,41 @@ router.post('/appointments', async (req, res) => {
 //HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
 //NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
 // NAME BY USER_ID
-router.delete('/appointments/:id', async (req, res) => {
+
+//DELETE APPOINTMENT IN USER & DOCTOR PROFILE
+router.delete('/appointments/:userid/:id', async (req, res) => {
   const { id } = req.params;
   const appointmentId = Number(id)
+
+  const {userid} = req.params;
+
   try {
     await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
-    const results = await db(`SELECT * FROM appointments;`);
+    const results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospital.name 
+       FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+       LEFT JOIN user ON doctor.user_id = user.user_id
+        LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
+        WHERE appointments.user_id = ${userid};`);
     res.send(results.data);
   } catch (err) {
     res.status(500).send({error: err.message});
   }
 })
+
+//HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
+//NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
+// NAME BY USER_ID
+// router.delete('/appointments/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const appointmentId = Number(id)
+//   try {
+//     await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
+//     const results = await db(`SELECT * FROM appointments;`);
+//     res.send(results.data);
+//   } catch (err) {
+//     res.status(500).send({error: err.message});
+//   }
+// })
 
 //GET ALL USERS
 router.get('/users', async (req, res) => {
