@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
-
 const db = require("../model/helper");
+require("dotenv").config();
+
+var jwt = require("jsonwebtoken");
 var bcrypt =require("bcrypt");
-const saltRounds = 10
+
+// variables needed for bcrypt to do the encryption
+const saltRounds = 10;
+// variable needed for creating the token
+const supersecret = process.env.SUPER_SECRET;
+
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -47,7 +55,10 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      res.send({ message: 'Login successful', user });
+      const token = jwt.sign({ userID: user.id}, supersecret);
+
+      res.status(200).send({token});
+      
     } else {
       res.status(401).send({ message: 'Incorrect password' });
     }
