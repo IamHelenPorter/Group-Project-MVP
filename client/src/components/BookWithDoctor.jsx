@@ -12,7 +12,7 @@ export default function BookWithDoctor() {
 
         
     const fetchDoctor = () => {
-        axios.get(`http://localhost:4000/doctor/${doctor_id}`)
+        axios.get(`/api/doctor/${doctor_id}`)
         .then(response => {
           setDoctor(response.data);
           console.log(response.data)
