@@ -6,7 +6,7 @@ function HospitalList() {
   const [hospitals, setHospitals] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/hospitals')
+    axios.get('/api/hospitals')
       .then(response => {
         setHospitals(response.data);
       })

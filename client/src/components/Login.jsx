@@ -9,7 +9,7 @@ function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios.post('http://localhost:4000/login', formData)
+    axios.post('/api/login', formData)
       .then(response => {
         // successful login
         console.log('Login successful', response.data);
