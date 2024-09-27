@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+
 import HomePage from './components/HomePage.jsx';
 import HospitalList from './components/HospitalList.jsx';
 import HospitalProfile from './components/HospitalProfile';
@@ -75,6 +77,7 @@ function App() {
     <AuthContext.Provider value={authObj}>
     <Router>
       <div>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
         <Routes>
           {/* Existing Routes */}
           <Route path="/" element={<HomePage />} />
@@ -100,6 +103,7 @@ function App() {
           {/* Doctors by hospital and specialty */}
           <Route path="/doctor/hospital/:hospital_id/speciality/:speciality" element={<DoctorListBySpecialityAndHospital />} />
         </Routes>
+        </LocalizationProvider>
       </div>
     </Router>
     </AuthContext.Provider>
