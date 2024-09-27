@@ -20,10 +20,10 @@ function Registration() {
     event.preventDefault();
 
     // Post the form data to the API endpoint
-    axios.post('http://localhost:4000/register', formData)
+    axios.post('/api/register', formData)
       .then(response => {
         console.log('User registered', response.data);
-        navigate('/login');  
+        navigate('/api/login');  
       })
       .catch(error => {
         setError(error.response ? error.response.data.message : 'Registration failed');

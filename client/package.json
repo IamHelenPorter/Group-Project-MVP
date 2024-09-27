@@ -17,7 +17,7 @@
     "simplebar": "^6.2.7",
     "simplebar-react": "^3.2.6"
 
-    "react-router-dom": "^6.26.2"
+    
 
   },
   "devDependencies": {
