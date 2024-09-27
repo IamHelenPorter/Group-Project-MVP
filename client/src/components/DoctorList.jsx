@@ -7,6 +7,16 @@ function DoctorList() {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
+    axios.get(`/api/doctor/hospital/${id}`)
+      .then(response => {
+        setDoctors(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the doctors!", error);
+      });
+  }, [id]);
+
+  useEffect(() => {
     axios.get(`api/hospitals/${id}/doctors`)
       .then(response => {
         setDoctors(response.data);
@@ -21,7 +31,7 @@ function DoctorList() {
       <h2>Doctors at Hospital</h2>
       <ul>
         {doctors.map(doctor => (
-          <li key={doctor.id}>{doctor.name} - {doctor.specialty}</li>
+          <li key={doctor.id}>{doctor.name} - {doctor.speciality}</li>
         ))}
       </ul>
     </div>

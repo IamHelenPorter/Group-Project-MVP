@@ -13,7 +13,7 @@ function HomePage() {
   return (
     <div>
       <h1>Welcome to Our Hospital Portal</h1>
-      <p>Search for doctors, hospitals, or specialties</p>
+      <p>Search for doctors, hospitals, or specialities</p>
 
       {/* Search Bar */}
       <form onSubmit={handleSearch}>
@@ -22,7 +22,7 @@ function HomePage() {
       </form>
 
       {/* Navigation Buttons */}
-      <button onClick={() => navigate('/specialties')}>View Specialties</button>
+      <button onClick={() => navigate('/speciality')}>View Specialities</button>
       <button onClick={() => navigate('/hospitals')}>View Hospitals</button>
 
       {/* Registration/Login Buttons */}
