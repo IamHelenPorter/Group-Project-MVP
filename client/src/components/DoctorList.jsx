@@ -16,6 +16,16 @@ function DoctorList() {
       });
   }, [id]);
 
+  useEffect(() => {
+    axios.get(`api/hospitals/${id}/doctors`)
+      .then(response => {
+        setDoctors(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the doctors!", error);
+      });
+  }, [id]);
+
   return (
     <div>
       <h2>Doctors at Hospital</h2>

@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
-
 const db = require("../model/helper");
+require("dotenv").config();
+
+var jwt = require("jsonwebtoken");
 var bcrypt =require("bcrypt");
-const saltRounds = 10
+
+// variables needed for bcrypt to do the encryption
+const saltRounds = 10;
+// variable needed for creating the token
+const supersecret = process.env.SUPER_SECRET;
+
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -47,7 +55,10 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      res.send({ message: 'Login successful', user });
+      const token = jwt.sign({ userID: user.id}, supersecret);
+
+      res.status(200).send({token});
+      
     } else {
       res.status(401).send({ message: 'Incorrect password' });
     }
@@ -72,12 +83,13 @@ router.get('/doctor', async (req, res) => {
 
 
 //GET DOCTOR BY ID INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
-router.get('/doctor/:id', async (req, res) => {
-  const id = req.params.id; 
-  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospitals.name, hospitals.address 
+router.get(`/doctor/:doctor_id`, async (req, res) => {
+  const doctor_id = req.params.doctor_id; 
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
   FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
-  LEFT JOIN hospitals ON hospitals.hospital_id = doctor.hospital_id WHERE user.user_id = ${id};`
+  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE doctor.doctor_id = ${doctor_id};`
   try {
+    
     const results = await db(sql);
     res.send(results.data);
   } catch (err) {
@@ -185,15 +197,6 @@ router.post('/appointments', async (req, res) => {
 
 
 
-
-//DO WE NEED A PUT ROUTE TO UPDATE APPOINTMENTS??
-
-
-
-//HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
-//NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
-// NAME BY USER_ID
-
 //DELETE APPOINTMENT IN USER & DOCTOR PROFILE
 router.delete('/appointments/:userid/:id', async (req, res) => {
   const { id } = req.params;
@@ -214,20 +217,6 @@ router.delete('/appointments/:userid/:id', async (req, res) => {
   }
 })
 
-//HOW DO I GET USER ID IN PARAMS, OR CAN I SEND A REQ BODY AS WELL?
-//NEED TO QUERY FOR ALL APPOINTMENTS HELD BY USER, DOCTOR NAME, HOSPITAL
-// NAME BY USER_ID
-// router.delete('/appointments/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const appointmentId = Number(id)
-//   try {
-//     await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
-//     const results = await db(`SELECT * FROM appointments;`);
-//     res.send(results.data);
-//   } catch (err) {
-//     res.status(500).send({error: err.message});
-//   }
-// })
 
 //GET ALL USERS
 router.get('/users', async (req, res) => {
