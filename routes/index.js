@@ -175,6 +175,7 @@ router.get('/appointments/doctor/:doctorid', async (req, res) => {
         WHERE appointments.doctor_id = ${doctorid};`);
 
     res.send(results.data)
+    console.log('HEYYYYYYYYY', results)
   } catch (err) {
     res.status(500).send({error: err.message});
   }

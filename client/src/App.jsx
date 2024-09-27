@@ -7,7 +7,6 @@ import HospitalList from './components/HospitalList.jsx';
 import HospitalProfile from './components/HospitalProfile';
 import DoctorList from './components/DoctorList.jsx';
 import DoctorListByHospital from './components/DoctorListbyHospital.jsx';
-import DoctorProfile from './components/DoctorProfile.jsx';
 import SpecialityList from './components/SpecialityList.jsx';
 import Registration from './components/Registration.jsx';
 import Login from './components/Login.jsx';

@@ -11,6 +11,7 @@ export default function BookWithDoctor() {
     
     const [selectedDate, setSelectedDate] = useState(null);
     const [doctor, setDoctor] = useState(null)
+    const [apptsBookedWithDoctor, setApptsBookedWithDoctor] = useState(null)
 
         console.log(selectedDate)
         
@@ -21,10 +22,28 @@ export default function BookWithDoctor() {
         })
      };
 
+     const fetchApptsBookedWithDoctor = () => {
+        axios.get(`/api/appointments/doctor/${doctor_id}`)
+        .then(response => {
+            setApptsBookedWithDoctor(response.data);
+            console.log(response.data)
+        })
+     }
+
 
      useEffect(() => {
         fetchDoctor();
     }, []);
+
+    useEffect(() => {
+        fetchApptsBookedWithDoctor();
+    }, []);
+
+
+    const getListOfAvailableTimes = (selectedDate) => {
+        const listofUnavailableTimes = [];
+        //GET ALL APPOINTMENTS BY DOCTOR_ID
+    }
 
 
 
@@ -47,6 +66,25 @@ export default function BookWithDoctor() {
          onChange={(newValue) => setSelectedDate(newValue)} />
 
         </div>
+        {/* <div>
+            APPOINTMENT TIME BUTTONS 
+            {appointmentTimes.map((time) => (
+            <button
+                  type="button"
+                  className=""
+                  aria-label={getAMPMFrm24Hrs(time)}
+                  onClick={(event) => { onTimeSelect(event); }}
+                >
+                  { getAMPMFrm24Hrs(time) }
+                </button>
+            ))}
+        </div>
+        <div>
+            <h4>
+                Appointment with Dr. {doctor[0].last_name}
+                {timeString} (30 min)
+            </h4>
+        </div> */}
 
 
     </div>
