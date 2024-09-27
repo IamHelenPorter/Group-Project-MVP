@@ -7,7 +7,7 @@ function DoctorList() {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/hospitals/${id}/doctors`)
+    axios.get(`api/hospitals/${id}/doctors`)
       .then(response => {
         setDoctors(response.data);
       })

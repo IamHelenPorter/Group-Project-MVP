@@ -7,6 +7,9 @@ import DoctorList from './components/DoctorList.jsx';
 import SpecialtyList from './components/SpecialtyList.jsx';
 import Registration from './components/Registration.jsx';
 import Login from './components/Login.jsx';
+
+import BookWithDoctor from './components/BookWithDoctor.jsx';
+
 import ProfilePage from './PatientProfile/ProfilePage.jsx'
 
 import { useState, useContext } from 'react';
@@ -78,7 +81,7 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           <Route path="/profile" element={<ProfilePage />} />
-          
+          <Route path="/doctor/:doctor_id" element={<BookWithDoctor />} />
 
         </Routes>
       </div>

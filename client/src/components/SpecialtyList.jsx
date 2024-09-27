@@ -5,7 +5,7 @@ function Specialties() {
   const [specialties, setSpecialties] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/specialties')
+    axios.get('/api/specialties')
       .then(response => {
         setSpecialties(response.data);
       })

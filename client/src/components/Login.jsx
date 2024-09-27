@@ -14,6 +14,7 @@ function Login() {
 
   const navigate = useNavigate();
 
+
   const [error, setError] = useState('');
   
 
@@ -36,37 +37,6 @@ function Login() {
       auth.logout();
     };
 
-  // const [data, setData] = useState(null)
-
-  // const login = async () => {
-
-  //   try {
-  //     const {data} = await axios("/api/login", {
-  //       method: "POST",
-  //       data: formData
-  //     });
-  //     console.log(data);
-  //     setData(data.message);
-
-  //     localStorage.setItem("token", data.token);
-  //   } catch (error) {
-  //     console.log(error);
-  //     setData(error.message);
-  //   }
-  // }
-
-  // const login = (event) => {
-  //   event.preventDefault();
-  //   axios.post('/api/login', formData)
-  //     .then(response => {
-  //       // successful login
-  //       console.log('Login successful', response.data);
-  //       navigate('/');  
-  //     })
-  //     .catch(error => {
-  //       setError(error.response ? error.response.data.message : 'Login failed');
-  //     });
-  // };
 
   return (
     <div>
