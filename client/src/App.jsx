@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 
 import HomePage from './components/HomePage.jsx';
 
@@ -15,18 +17,20 @@ function App() {
   return (
     <Router>
       <div>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/hospitals" element={<HospitalList />} />
-          <Route path="/hospitals/:id/doctors" element={<DoctorList />} />
-          <Route path="/specialties" element={<SpecialtyList />} />
-          <Route path="/register" element={<Registration />} />
-          <Route path="/login" element={<Login />} />
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/hospitals" element={<HospitalList />} />
+            <Route path="/hospitals/:id/doctors" element={<DoctorList />} />
+            <Route path="/specialties" element={<SpecialtyList />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/login" element={<Login />} />
 
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/doctor/:doctor_id" element={<BookWithDoctor />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/doctor/:doctor_id" element={<BookWithDoctor />} />
 
-        </Routes>
+          </Routes>
+        </LocalizationProvider>
       </div>
     </Router>
   );

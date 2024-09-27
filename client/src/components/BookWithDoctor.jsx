@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTime } from 'luxon';
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
 
@@ -7,15 +9,15 @@ export default function BookWithDoctor() {
    
     const { doctor_id } = useParams();
     
-
+    const [selectedDate, setSelectedDate] = useState(null);
     const [doctor, setDoctor] = useState(null)
 
+        console.log(selectedDate)
         
     const fetchDoctor = () => {
         axios.get(`/api/doctor/${doctor_id}`)
         .then(response => {
           setDoctor(response.data);
-          console.log(response.data)
         })
      };
 
@@ -40,6 +42,11 @@ export default function BookWithDoctor() {
         <h4>{doctor[0].address}</h4>
         </div>
         }
+        <div>
+        <DatePicker  value={selectedDate}
+         onChange={(newValue) => setSelectedDate(newValue)} />
+
+        </div>
 
 
     </div>
