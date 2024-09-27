@@ -12,7 +12,7 @@ import {
   NumberInputStepper,
 } from '@chakra-ui/react'
 
-function CompanySettings() {
+function UpcomingAppts() {
   return (
     <Grid
       templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
@@ -63,4 +63,4 @@ function CompanySettings() {
   )
 }
 
-export default CompanySettings
+export default UpcomingAppts
