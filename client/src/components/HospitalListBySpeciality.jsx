@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function HospitalList() {
+function HospitalListBySpeciality() {
+  const { speciality } = useParams();
   const [hospitals, setHospitals] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/api/hospitals')
+    axios.get(`/api/hospitals/speciality/${speciality}`)
       .then(response => {
         setHospitals(response.data);
       })
@@ -16,7 +17,7 @@ function HospitalList() {
         console.error("Error fetching hospitals:", error);
         setError('Failed to fetch hospitals');
       });
-  }, []);
+  }, [speciality]);
 
   if (error) {
     return <p>{error}</p>;
@@ -24,13 +25,12 @@ function HospitalList() {
 
   return (
     <div>
-      <h2>All Hospitals</h2>
+      <h2>Hospitals Specializing in {speciality}</h2>
       <ul>
         {hospitals.length > 0 ? (
           hospitals.map(hospital => (
             <li key={hospital.hospital_id}>
-              {/* Navigate to doctors list for the selected hospital */}
-              <button onClick={() => navigate(`/hospitals/${hospital.hospital_id}/doctor`)}>
+              <button onClick={() => navigate(`/hospitals/${hospital.hospital_id}/speciality/${speciality}/doctor`)}>
                 {hospital.name} - {hospital.address}
               </button>
             </li>
@@ -43,4 +43,4 @@ function HospitalList() {
   );
 }
 
-export default HospitalList;
+export default HospitalListBySpeciality;

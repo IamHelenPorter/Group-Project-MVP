@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
-
 const db = require("../model/helper");
+require("dotenv").config();
+
+var jwt = require("jsonwebtoken");
 var bcrypt =require("bcrypt");
-const saltRounds = 10
+
+// variables needed for bcrypt to do the encryption
+const saltRounds = 10;
+// variable needed for creating the token
+const supersecret = process.env.SUPER_SECRET;
+
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -47,7 +55,10 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      res.send({ message: 'Login successful', user });
+      const token = jwt.sign({ userID: user.id}, supersecret);
+
+      res.status(200).send({token});
+      
     } else {
       res.status(401).send({ message: 'Incorrect password' });
     }
@@ -59,9 +70,9 @@ router.post('/login', async (req, res) => {
 
 //GET ALL DOCTORS INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
 router.get('/doctor', async (req, res) => {
-  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospitals.name, hospitals.address 
   FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
-  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id;`
+  LEFT JOIN hospitals ON hospitals.hospital_id = doctor.hospital_id;`
   try {
     let results = await db(sql);
     res.send(results.data)
@@ -87,7 +98,7 @@ router.get(`/doctor/:doctor_id`, async (req, res) => {
 });
 
 //GET ALL DOCTORS BY HOSPITAL ID
-router.get('/doctor/hospital/:id', async (req, res) => {
+router.get('/doctor/hospitals/:id', async (req, res) => {
   const { id } = req.params;
   const sql = `SELECT doctor.*, user.first_name, user.last_name 
   FROM doctor LEFT JOIN user ON doctor.user_id = user.user_id 
@@ -116,9 +127,9 @@ router.post('/doctor', async (req, res) => {
     } else {
 
     await db(insertDoctor);
-    const doctorResults = await db(`SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+    const doctorResults = await db(`SELECT doctor.*, user.first_name, user.last_name, user.image, hospitals.name, hospitals.address 
       FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id
-       LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE user.user_id = ${user_id};`);
+       LEFT JOIN hospitals ON hospitals.hospital_id = doctor.hospital_id WHERE user.user_id = ${user_id};`);
 
     res.send(doctorResults.data)
     }
@@ -143,10 +154,10 @@ router.delete('/doctor/:id', async (req, res) => {
 router.get('/appointments/user/:userid', async (req, res) => {
   const {userid} = req.params;
   try {
-    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospital.name 
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospitals.name 
        FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
        LEFT JOIN user ON doctor.user_id = user.user_id
-        LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
+        LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
         WHERE appointments.user_id = ${userid};`);
 
     res.send(results.data)
@@ -195,10 +206,10 @@ router.delete('/appointments/:userid/:id', async (req, res) => {
 
   try {
     await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
-    const results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospital.name 
+    const results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospitals.name 
        FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
        LEFT JOIN user ON doctor.user_id = user.user_id
-        LEFT JOIN hospital ON doctor.hospital_id = hospital.hospital_id 
+        LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
         WHERE appointments.user_id = ${userid};`);
     res.send(results.data);
   } catch (err) {
@@ -259,7 +270,7 @@ router.delete("/users/:id", async (req, res) => {
 //GET ALL HOSPITALS
 router.get('/hospitals', async (req, res) => {
   try {
-    const results = await db("SELECT * FROM hospital;");
+    const results = await db("SELECT * FROM hospitals;");
 
     res.send(results.data);
 
@@ -270,20 +281,20 @@ router.get('/hospitals', async (req, res) => {
 
 //POST NEW HOSPITAL
 router.post('/hospitals', async (req, res) => {
-  let {name, address, emergency, departments} = req.body;
+  let { name, address, emergency, departments } = req.body;
 
   try {
-    await db(`INSERT INTO hospital (name, address, emergency, departments) VALUES ('${name}', '${address}', '${emergency}', '${departments}');`);
+   
+    await db(`INSERT INTO hospitals (name, address, emergency, departments) VALUES ('${name}', '${address}', '${emergency}', '${departments}');`);
 
-    const results = await db("SELECT * FROM hospital;");
-    console.log(`result`)
-    res.send(results.data);
-
+    const results = await db("SELECT * FROM hospitals;");
+    res.json(results);
   } catch (err) {
-    console.log(`error`, err)
-    res.send(err)
+    console.error('Error:', err);
+    res.status(500).send({ error: err.message });
   }
 });
+
 
 //GET HOSPITAL BY ID
 router.get("/hospitals/:id", async (req, res) => {
@@ -292,8 +303,8 @@ router.get("/hospitals/:id", async (req, res) => {
 
   try { 
 
-    const results = await db(`SELECT * FROM hospital WHERE hospital_id = ${id};`);
-    res.send(results.data);
+    const results = await db(`SELECT * FROM hospitals WHERE hospital_id = ${id};`);
+    res.json(results[0]);
 
   } catch (err) {
     res.send(err)
@@ -307,16 +318,79 @@ router.delete("/hospitals/:id", async (req, res) => {
 
   try { 
 
-    await db(`DELETE FROM hospital WHERE hospital_id = ${id};`)
+    await db(`DELETE FROM hospitals WHERE hospital_id = ${id};`)
 
-    const results = await db("SELECT * FROM hospital;");
+    const results = await db("SELECT * FROM hospitals;");
     res.send(results.data);
 
   } catch (err) {
     res.send(err)
   }
 });
+ //Specialties
+router.get('/speciality', async (req, res) => {
+  try {
+    const results = await db("SELECT DISTINCT speciality FROM doctor;");
+    res.json(results);  // Return the list of unique specialties
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+router.get('/hospitals/speciality/:speciality', async (req, res) => {
+  const { speciality } = req.params;
+  
+  try {
+    const results = await db(`
+      SELECT DISTINCT hospitals.hospital_id, hospitals.name, hospitals.address 
+      FROM doctor 
+      JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
+      WHERE doctor.speciality = '${speciality}';
+    `);
+    res.json(results);  // Return the list of hospitals that specialize in the given specialty
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+// Get doctors by hospital ID
+router.get('/hospitals/:hospital_id/doctor', async (req, res) => {
+  const { hospital_id } = req.params;
+  
+  try {
+    const results = await db(`
+      SELECT doctor.*, user.first_name, user.last_name
+      FROM doctor
+      JOIN user ON doctor.user_id = user.user_id
+      WHERE doctor.hospital_id = ${hospital_id};
+    `);
+    res.json(results);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+
+router.get('/doctor/hospitals/:hospital_id/speciality/:speciality', async (req, res) => {
+  const { hospital_id, specialty } = req.params;
+  
+  try {
+    const results = await db(`
+      SELECT doctor.*, user.first_name, user.last_name 
+      FROM doctor 
+      JOIN user ON doctor.user_id = user.user_id 
+      WHERE doctor.hospital_id = ${hospital_id} AND doctor.speciality = '${speciality}';
+    `);
+    res.json(results);  // Return the list of doctors for the given hospital and specialty
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+
 
 
 
 module.exports = router;
+
+
