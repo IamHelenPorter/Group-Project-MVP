@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 
+import PrivateRoute from './components/PrivateRoute.jsx';
+import Navbar from './components/Navbar.jsx';
+
 import HomePage from './components/HomePage.jsx';
 import HospitalList from './components/HospitalList.jsx';
 import HospitalProfile from './components/HospitalProfile';
@@ -26,7 +29,6 @@ function App() {
     // if the token is present, isLoggedIn is true, else it is false
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
 
-  const [error, setError] = useState('');
   
   const login = async (credentials) => {
     // send a POST request to /api/auth/login with the username and password
@@ -48,19 +50,6 @@ function App() {
     }
   };
 
-  // const login = (formData) => {
-  //   // event.preventDefault();
-  //   axios.post('/api/login', formData)
-  //     .then(response => {
-  //       // successful login
-  //       console.log('Login successful', response.data);
-  //       navigate('/');  
-  //     })
-  //     .catch(error => {
-  //       setError(error.response ? error.response.data.message : 'Login failed');
-  //     });
-  // };
-
   const logout = () => {
     // remove the token from the local storage
     localStorage.removeItem("token");
@@ -75,10 +64,17 @@ function App() {
 
   return (
     <AuthContext.Provider value={authObj}>
+      
+      
+      
     <Router>
+    <Navbar/>
       <div>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <Routes>
+
+          <Route path="/navbar" element={<Navbar />}/>
+        
           {/* Existing Routes */}
           <Route path="/" element={<HomePage />} />
           {/* View all hospitals */}
