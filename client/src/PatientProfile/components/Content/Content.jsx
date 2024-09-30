@@ -6,7 +6,7 @@ import UpcomingAppts from './UpcomingAppts'
 import Notifications from './Notifications'
 
 const Content = () => {
-  const tabs = ['Account Settings', 'Upcoming Appointments','Appointment History']
+  const tabs = ['Upcoming Appointments','Past Appointments', 'Account Settings']
 
   return (
     <Box
