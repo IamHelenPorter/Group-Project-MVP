@@ -75,7 +75,8 @@ export default function BookWithDoctor() {
             fetch(`/api/appointments`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({postableAppt})
                 })
