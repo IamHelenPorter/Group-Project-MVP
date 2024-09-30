@@ -76,7 +76,11 @@ VALUES
 ('Emily', 'Stone', 'estone', 'password123', 'emily.stone@example.com', 'doctor', '2024-09-14 09:00:00', '2024-09-14 09:00:00', '1985-06-10', NULL),
 ('Michael', 'Johnson', 'mjohnson', 'strongpass456', 'michael.johnson@example.com', 'doctor', '2024-09-14 10:30:00', '2024-09-14 10:30:00', '1978-04-17', NULL),
 ('Laura', 'Williams', 'lwilliams', 'safePass789', 'laura.williams@example.com', 'doctor', '2024-09-15 11:00:00', '2024-09-15 11:00:00', '1982-03-21', 'laura_profile.jpg'),
-('David', 'Brown', 'dbrown', 'passdbrown123', 'david.brown@example.com', 'doctor', '2024-09-16 08:30:00', '2024-09-16 08:30:00', '1987-07-30', 'david_profile.jpg');
+('David', 'Brown', 'dbrown', 'passdbrown123', 'david.brown@example.com', 'doctor', '2024-09-16 08:30:00', '2024-09-16 08:30:00', '1987-07-30', 'david_profile.jpg'),
+('Anna', 'Taylor', 'ataylor', 'mypassword789', 'anna.taylor@example.com', 'patient', '2024-09-13 10:00:00', '2024-09-13 10:00:00', '1990-01-22', NULL),
+('Ben', 'Murphy', 'bmurphy', 'password456', 'ben.murphy@example.com', 'patient', '2024-09-13 11:00:00', '2024-09-13 11:00:00', '1977-09-18', NULL),
+('Carla', 'Evans', 'cevans', 'strongpass789', 'carla.evans@example.com', 'patient', '2024-09-13 12:00:00', '2024-09-13 12:00:00', '1992-06-05', NULL),
+('Dylan', 'Reed', 'dreed', 'pass1234', 'dylan.reed@example.com', 'patient', '2024-09-13 12:00:00', '2024-09-13 12:00:00', '1988-11-30', NULL);
 
 
 INSERT INTO hospitals (name, address, emergency, departments)
