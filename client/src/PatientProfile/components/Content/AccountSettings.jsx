@@ -1,59 +1,57 @@
-import { FormControl, FormLabel, Grid, Input, Select } from '@chakra-ui/react'
+//THIS IS ACTUALLY UPCOMING APPOINTMENTS
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FormControl, FormLabel } from '@chakra-ui/react'
 
 function AccountSettings() {
+
+  const [apptData, setApptData] = useState(null);
+
+  // get private user data on page load -> useEffect()!
+  useEffect(()=>{
+    requestApptData();
+  }, []);
+  console.log(apptData)
+
+  const navigate = useNavigate();
+
+  const requestApptData = async () => {
+    //0. if no token then redirect to login, don't let the user see the page
+     let token = localStorage.getItem("token")
+     if (!token) navigate("/")
+
+    //1. send post request including authorization header
+      let options = {
+        method: "GET",
+        headers: {"authorization": `Bearer ${token}`}
+      }
+
+      let results = await fetch("http://localhost:4000/api/appointments/user", options);
+      let data = await results.json();
+
+    //2. store response private data
+      setApptData(data);
+  };
+
   return (
-    <Grid
-      templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-      gap={6}
+    <FormControl
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
     >
-      <FormControl id="firstName">
-        <FormLabel>First Name</FormLabel>
-        <Input focusBorderColor="brand.blue" type="text" placeholder="Tim" />
-      </FormControl>
-      <FormControl id="lastName">
-        <FormLabel>Last Name</FormLabel>
-        <Input focusBorderColor="brand.blue" type="text" placeholder="Cook" />
-      </FormControl>
-      <FormControl id="phoneNumber">
-        <FormLabel>Phone Number</FormLabel>
-        <Input
-          focusBorderColor="brand.blue"
-          type="tel"
-          placeholder="(408) 996–1010"
-        />
-      </FormControl>
-      <FormControl id="emailAddress">
-        <FormLabel>Email Address</FormLabel>
-        <Input
-          focusBorderColor="brand.blue"
-          type="email"
-          placeholder="tcook@apple.com"
-        />
-      </FormControl>
-      <FormControl id="city">
-        <FormLabel>City</FormLabel>
-        <Select focusBorderColor="brand.blue" placeholder="Select city" defaultValue="newyork">
-  <option value="california">California</option>
-  <option value="washington">Washington</option>
-  <option value="toronto">Toronto</option>
-  <option value="newyork">New York</option>
-  <option value="london">London</option>
-  <option value="netherland">Netherland</option>
-  <option value="poland">Poland</option>
-</Select>
-
-      </FormControl>
-      <FormControl id="country">
-        <FormLabel>Country</FormLabel>
-        <Select focusBorderColor="brand.blue" placeholder="Select country" defaultValue="america">
-  <option value="america">America</option>
-  <option value="england">England</option>
-  <option value="poland">Poland</option>
-</Select>
-
-      </FormControl>
-    </Grid>
+      <FormLabel
+        htmlFor="notificationEmails"
+        mb={0}
+        cursor="pointer"
+        userSelect="none"
+      >
+        Testing
+      </FormLabel>
+      
+    </FormControl>
   )
+  
 }
 
 export default AccountSettings

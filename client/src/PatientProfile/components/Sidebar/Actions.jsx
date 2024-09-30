@@ -24,9 +24,9 @@ export default function Actions() {
   return (
     <VStack py={8} px={5} spacing={3}>
       <Button w="full" variant="outline">
-        View Public Profile
+        Book New Appointment
       </Button>
-      <InputGroup>
+      {/* <InputGroup>
         <Input
           ref={profileUrl}
           type="url"
@@ -44,7 +44,7 @@ export default function Actions() {
             </svg>
           </Button>
         </InputRightAddon>
-      </InputGroup>
+      </InputGroup> */}
     </VStack>
   )
 }

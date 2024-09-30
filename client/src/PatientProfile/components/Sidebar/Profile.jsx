@@ -1,4 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   Avatar,
   AvatarBadge,
@@ -18,7 +20,11 @@ import {
   VStack,
 } from '@chakra-ui/react'
 
-function Profile() {
+function Profile({privateData}) {
+
+  
+
+
   const [userProfile, setUserProfile] = useState(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -39,6 +45,12 @@ function Profile() {
     }
 
     onOpen()
+  }
+
+  const test = {
+    first_name: "Alia",
+    last_name: "Bravo",
+    username: "aliabravo123"
   }
 
   return (
@@ -88,15 +100,27 @@ function Profile() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <VStack spacing={1}>
-        <Heading as="h3" fontSize="xl" color="brand.dark">
-          Tim Cook
-        </Heading>
-        <Text color="brand.gray" fontSize="sm">
-          CEO of Apple
-        </Text>
-      </VStack>
+
+      <div>
+        {privateData &&(
+          <VStack spacing={1}>
+          <Heading as="h3" fontSize="xl" color="brand.dark">
+            {`${privateData.first_name} ${privateData.last_name}`}
+          </Heading>
+          <Text color="brand.gray" fontSize="sm">
+            {`${privateData.username}`}
+          </Text>
+        </VStack>
+  
+
+        )}
+      
+      </div>
+      
+
     </VStack>
+      
+      
   )
 }
 
