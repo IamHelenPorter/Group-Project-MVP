@@ -17,6 +17,7 @@ import ProfilePage from './PatientProfile/ProfilePage.jsx';
 import HospitalListBySpeciality from './components/HospitalListBySpeciality.jsx';
 import DoctorListBySpecialityAndHospital from './components/DoctorListBySpecialityAndHospital.jsx';
 import BookWithDoctor from './components/BookWithDoctor.jsx';
+import Search from './components/Search.jsx';
 
 
 import { useState, useContext } from 'react';
@@ -89,7 +90,8 @@ function App() {
           <Route path="/register" element={<Registration />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/doctor/:doctor_id" element={<BookWithDoctor />} />
+          <Route path="/doctor/:doctor_id/book" element={<BookWithDoctor />} />
+          <Route path="/search" element={<Search />} />
 
           {/* New Routes */}
           {/* Hospitals by specialty */}
