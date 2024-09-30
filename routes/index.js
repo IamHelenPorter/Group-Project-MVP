@@ -191,6 +191,7 @@ router.get('/appointments/doctor/:doctorid', async (req, res) => {
         WHERE appointments.doctor_id = ${doctorid};`);
 
     res.send(results.data)
+    console.log('HEYYYYYYYYY', results)
   } catch (err) {
     res.status(500).send({error: err.message});
   }
@@ -198,13 +199,14 @@ router.get('/appointments/doctor/:doctorid', async (req, res) => {
 
 
 // POST APPOINTMENT
-router.post('/appointments', async (req, res) => {
-  const { user_id, doctor_id, start_time, status } = req.body;
+router.post('/appointments', userShouldBeLoggedIn, async (req, res) => {
+  const { user_id, doctor_id, start_time, status } = req.body.postableAppt;
+  console.log("HEYYYYYY", req.body)
   const insertAppointment = `INSERT INTO appointments (user_id, doctor_id, start_time, status)
-   VALUES ( ${user_id}, ${doctor_id}, '${start_time}', '${status}');`
+   VALUES ( ${req.userID};, ${doctor_id}, '${start_time}', '${status}');`
    try {
     await db(insertAppointment);
-    const results = await db(`SELECT * FROM appointments WHERE doctor_id = ${doctor_id}`);
+    const results = await db(`SELECT * FROM appointments WHERE user_id = ${user_id}`);
     res.send(results.data)
   } catch (err) {
     res.status(500).send({error: err.message});
