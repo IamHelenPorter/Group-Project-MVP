@@ -85,9 +85,9 @@ router.get('/doctor', async (req, res) => {
 //GET DOCTOR BY ID INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
 router.get(`/doctor/:doctor_id`, async (req, res) => {
   const doctor_id = req.params.doctor_id; 
-  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospital.name, hospital.address 
+  const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospitals.name, hospitals.address 
   FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
-  LEFT JOIN hospital ON hospital.hospital_id = doctor.hospital_id WHERE doctor.doctor_id = ${doctor_id};`
+  LEFT JOIN hospitals ON hospitals.hospital_id = doctor.hospital_id WHERE doctor.doctor_id = ${doctor_id};`
   try {
     
     const results = await db(sql);
@@ -337,6 +337,7 @@ router.get('/speciality', async (req, res) => {
   }
 });
 
+
 router.get('/hospitals/speciality/:speciality', async (req, res) => {
   const { speciality } = req.params;
   
@@ -371,8 +372,8 @@ router.get('/hospitals/:hospital_id/doctor', async (req, res) => {
 });
 
 
-router.get('/doctor/hospitals/:hospital_id/speciality/:speciality', async (req, res) => {
-  const { hospital_id, specialty } = req.params;
+router.get('/doctor/hospitals/:hospital_id/speciality/:speciality/doctor', async (req, res) => {
+  const { hospital_id, speciality } = req.params;
   
   try {
     const results = await db(`
@@ -388,8 +389,37 @@ router.get('/doctor/hospitals/:hospital_id/speciality/:speciality', async (req, 
 });
 
 
+// Search doctors, hospitals, or specialities
+router.get('/search', async (req, res) => {
+  const { query } = req.query;
 
+  try {
+    const results = await db(`
+      SELECT 'doctor' as type, doctor.doctor_id, user.first_name, user.last_name, doctor.speciality, hospitals.name AS hospital_name
+      FROM doctor
+      JOIN user ON doctor.user_id = user.user_id
+      JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id
+      WHERE user.first_name LIKE '%${query}%' 
+      OR user.last_name LIKE '%${query}%'
+      
+      UNION ALL
+      
+      SELECT 'hospital' as type, hospitals.hospital_id, NULL as first_name, NULL as last_name, NULL as speciality, hospitals.name AS hospital_name
+      FROM hospitals
+      WHERE hospitals.name LIKE '%${query}%'
+      
+      UNION ALL
+      
+      SELECT 'speciality' as type, NULL as doctor_id, NULL as first_name, NULL as last_name, doctor.speciality, NULL as hospital_name
+      FROM doctor
+      WHERE doctor.speciality LIKE '%${query}%';
+    `);
 
+    res.json(results);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
 
 module.exports = router;
 

@@ -11,7 +11,7 @@ function HospitalListBySpeciality() {
   useEffect(() => {
     axios.get(`/api/hospitals/speciality/${speciality}`)
       .then(response => {
-        setHospitals(response.data);
+        setHospitals(response.data.data);
       })
       .catch(error => {
         console.error("Error fetching hospitals:", error);
@@ -25,20 +25,21 @@ function HospitalListBySpeciality() {
 
   return (
     <div>
-      <h2>Hospitals Specializing in {speciality}</h2>
+      <h2>Hospitals Specialising in {speciality}</h2>
       <ul>
-        {hospitals.length > 0 ? (
-          hospitals.map(hospital => (
-            <li key={hospital.hospital_id}>
-              <button onClick={() => navigate(`/hospitals/${hospital.hospital_id}/speciality/${speciality}/doctor`)}>
-                {hospital.name} - {hospital.address}
-              </button>
-            </li>
-          ))
-        ) : (
-          <p>No hospitals available</p>
-        )}
+          {hospitals.length > 0 ? (
+            hospitals.map((hospital) => (
+        <li key={hospitals.hospital_id}> 
+        <button onClick={() => navigate(`/doctor/hospitals/${hospitals.hospital_id}/speciality/${speciality}/doctor`)}>
+          {hospitals.name} - {hospitals.address}
+        </button>
+        </li>
+    ))
+  ) : (
+    <p>No hospitals available</p>
+  )}
       </ul>
+
     </div>
   );
 }

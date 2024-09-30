@@ -10,7 +10,8 @@ function SpecialityList() {
   useEffect(() => {
     axios.get('/api/speciality')
       .then(response => {
-        setSpecialities(response.data);
+        setSpecialities(response.data.data);
+        console.log(specialities)
       })
       .catch(error => {
         console.error("Error fetching specialities:", error);
@@ -26,7 +27,7 @@ function SpecialityList() {
     <div>
       <h2>Specialities</h2>
       <ul>
-        {specialities.map(speciality => (
+        {specialities && specialities.map(speciality => (
           <li key={speciality.speciality}>
             <button onClick={() => navigate(`/hospitals/speciality/${speciality.speciality}`)}>
               {speciality.speciality}

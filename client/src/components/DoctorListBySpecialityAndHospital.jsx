@@ -8,7 +8,7 @@ function DoctorListBySpecialityAndHospital() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/doctor/hospitals/${hospital_id}/speciality/${speciality}`)
+    axios.get(`/api/doctors/hospitals/${hospital_id}/speciality/${speciality}/doctor`)
       .then(response => {
         setDoctors(response.data);
       })
@@ -24,7 +24,7 @@ function DoctorListBySpecialityAndHospital() {
 
   return (
     <div>
-      <h2>Doctors Specializing in {speciality} at Hospital {hospital_id}</h2>
+      <h2>Doctors Specialising in {speciality} at Hospital {hospital_id}</h2>
       <ul>
         {doctors.length > 0 ? (
           doctors.map(doctor => (

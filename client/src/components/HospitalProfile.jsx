@@ -21,10 +21,10 @@ function HospitalProfile() {
 
   return (
     <div>
-      <h2>{hospital.name}</h2>
-      <p>Address: {hospital.address}</p>
-      <p>Emergency Services: {hospital.emergency ? 'Available' : 'Not Available'}</p>
-      <p>Departments: {hospital.departments}</p>
+      <h2>{hospitals.name}</h2>
+      <p>Address: {hospitals.address}</p>
+      <p>Emergency Services: {hospitals.emergency ? 'Available' : 'Not Available'}</p>
+      <p>Departments: {hospitals.departments}</p>
     </div>
   );
 }
