@@ -3,6 +3,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTime, Duration } from 'luxon';
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { list } from '@chakra-ui/react';
 
 
@@ -24,7 +25,8 @@ export default function BookWithDoctor() {
         start_time: convertedTime,
         status: "booked"
         }
-    )
+    );
+    const navigate = useNavigate(); 
 
         useEffect(() => {
             fetchDoctor();
@@ -74,8 +76,8 @@ export default function BookWithDoctor() {
                 })
                 .then((response) => response.json())
                 .then((allApptsOfUser) => {
-                    console.log(allApptsOfUser)
-                    //SHOULD ROUTE TO USER PROFILE, LIST OF APPTS??
+                    console.log(allApptsOfUser);
+                    navigate('/profile')
             })
         }
      };
@@ -114,7 +116,7 @@ export default function BookWithDoctor() {
         
         return !listofUnavailableTimes.some((unavailableTime) => {
           const unavailableKey = `${unavailableTime.hour}:${unavailableTime.minute}`; // Unique key for unavailable times
-          return unavailableKey === timeKey; // Return true if the times match
+          return unavailableKey === timeKey; // Returns true if the times match, therefore not adding to the filtered array
             });
          });
          setListOfAvailableTimes(availableTimes);
