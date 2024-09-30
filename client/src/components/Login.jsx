@@ -20,6 +20,7 @@ function Login() {
 
     // STEP 3 - CONSUME THE CONTEXT
     const auth = useContext(AuthContext);
+    console.log("THIS IS THE AUTH CONTEXT", auth)
 
     const handleChange = (e) => {
       const { name, value } = e.target;
