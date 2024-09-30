@@ -33,13 +33,13 @@ export default function BookWithDoctor() {
     );
     const navigate = useNavigate(); 
 
-        useEffect(() => {
-            fetchDoctor();
-        }, []);
+    useEffect(() => {
+        fetchDoctor();
+    }, []);
     
-        useEffect(() => {
-            fetchApptsBookedWithDoctor();
-        }, [doctor]);
+    useEffect(() => {
+         fetchApptsBookedWithDoctor();
+    }, [doctor]);
         
     const fetchDoctor = () => {
         axios.get(`/api/doctor/${doctor_id}`)
@@ -91,7 +91,6 @@ export default function BookWithDoctor() {
 
      useEffect(() => {
         //Get times that are already booked for selected day
-        if (apptsBookedWithDoctor.length > 0) {
             const listofUnavailableTimes = [];
             const parsedSelectedDate = DateTime.fromISO(selectedDate);
             for ( let i = 0; i < apptsBookedWithDoctor.length; i++ ) {
@@ -104,7 +103,7 @@ export default function BookWithDoctor() {
                     listofUnavailableTimes.push(parsedCheckBookedAppt)
                 }
                 console.log(listofUnavailableTimes)
-            }
+            }  
         //Set working hours, and set duration of appts
             const dateAt9AM = parsedSelectedDate.set({ hour: 9, minute: 0, second: 0 });
             const dateAt5PM = parsedSelectedDate.set({ hour: 17, minute: 0, second: 0});
@@ -125,9 +124,7 @@ export default function BookWithDoctor() {
           return unavailableKey === timeKey; // Returns true if the times match, therefore not adding to the filtered array
             });
          });
-         setListOfAvailableTimes(availableTimes);
-       
-        }
+        setListOfAvailableTimes(availableTimes);
     }, [apptsBookedWithDoctor, selectedDate]); 
 
 
