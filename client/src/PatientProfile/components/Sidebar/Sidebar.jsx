@@ -4,7 +4,7 @@ import Actions from './Actions'
 import Data from './Data'
 import Profile from './Profile'
 
-function Sidebar() {
+function Sidebar({privateData}) {
   return (
     <Box
       as="aside"
@@ -17,7 +17,7 @@ function Sidebar() {
       borderColor="brand.light"
       style={{ transform: 'translateY(-100px)' }}
     >
-      <Profile />
+      <Profile privateData={privateData} />
       <Data />
       <Actions />
     </Box>

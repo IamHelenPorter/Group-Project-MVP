@@ -8,7 +8,7 @@ function DoctorListBySpecialityAndHospital() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/doctors/hospitals/${hospital_id}/speciality/${speciality}/doctor`)
+    axios.get(`/api/doctor/hospitals/${hospital_id}/speciality/${speciality}/doctor`)
       .then(response => {
         setDoctors(response.data);
       })
