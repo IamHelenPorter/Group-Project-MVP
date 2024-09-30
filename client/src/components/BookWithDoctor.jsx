@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import { list } from '@chakra-ui/react';
 
+
 export default function BookWithDoctor() {
 
     const now = DateTime.now()
@@ -15,21 +16,23 @@ export default function BookWithDoctor() {
     const [doctor, setDoctor] = useState(null);
     const [apptsBookedWithDoctor, setApptsBookedWithDoctor] = useState([]);
     const [listOfAvailableTimes, setListOfAvailableTimes] = useState([]);
-     
+    const [selectedTime, setSelectedTime] = useState(null)
+    const [convertedTime, setConvertedTime] = useState(null)
+    const [postableAppt, setPostableAppt] = useState(
+        { user_id: 10,
+        doctor_id: doctor_id,
+        start_time: convertedTime,
+        status: "booked"
+        }
+    )
 
-
-    
         useEffect(() => {
             fetchDoctor();
         }, []);
     
         useEffect(() => {
             fetchApptsBookedWithDoctor();
-        }, []);
-    
-        // useEffect(() => {
-        //     getListOfAvailableTimes();
-        // }, []);
+        }, [doctor]);
         
     const fetchDoctor = () => {
         axios.get(`/api/doctor/${doctor_id}`)
@@ -46,8 +49,39 @@ export default function BookWithDoctor() {
      };
 
      useEffect(() => {
-        // const getListOfAvailableTimes = (selectedDate) FINISH THIS
+        // Update postableAppt when convertedTime or doctor_id changes
+        setPostableAppt((prevState) => ({
+          ...prevState,
+          doctor_id: doctor_id, 
+          start_time: convertedTime 
+        }));
+      }, [convertedTime, doctor_id]);
 
+     const handleTimeClick = (e) => {
+        setConvertedTime(e.toISO())
+        setSelectedTime(e)
+     };
+
+     const handleSubmitAppt = () => {
+        const confirmSubmit = window.confirm("Are you sure you want to book this appointment?");
+        if (confirmSubmit) {
+            fetch(`/api/appointments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({postableAppt})
+                })
+                .then((response) => response.json())
+                .then((allApptsOfUser) => {
+                    console.log(allApptsOfUser)
+                    //SHOULD ROUTE TO USER PROFILE, LIST OF APPTS??
+            })
+        }
+     };
+
+
+     useEffect(() => {
         //Get times that are already booked for selected day
         if (apptsBookedWithDoctor.length > 0) {
             const listofUnavailableTimes = [];
@@ -61,11 +95,12 @@ export default function BookWithDoctor() {
                 if (parsedCheckBookedAppt.hasSame(parsedSelectedDate, 'day')) {
                     listofUnavailableTimes.push(parsedCheckBookedAppt)
                 }
+                console.log(listofUnavailableTimes)
             }
-
+        //Set working hours, and set duration of appts
             const dateAt9AM = parsedSelectedDate.set({ hour: 9, minute: 0, second: 0 });
             const dateAt5PM = parsedSelectedDate.set({ hour: 17, minute: 0, second: 0});
-            const dur = Duration.fromObject({ hours: 0, minutes: 30 });
+            const dur = Duration.fromObject({ hours: 0, minutes: 30, seconds: 0});
             let incrementedTime = dateAt9AM;
             let allTimeSlots = [];
        //Find list of all times, push to array
@@ -74,8 +109,15 @@ export default function BookWithDoctor() {
                 incrementedTime = incrementedTime.plus(dur)
             }
        // then filter out list of unavailable times
-            let availableTimes = allTimeSlots.filter((e) => listofUnavailableTimes.indexOf(e) < 0)
-            setListOfAvailableTimes(availableTimes);
+       const availableTimes = allTimeSlots.filter((time) => {
+        const timeKey = `${time.hour}:${time.minute}`; // Create a unique key for each time
+        
+        return !listofUnavailableTimes.some((unavailableTime) => {
+          const unavailableKey = `${unavailableTime.hour}:${unavailableTime.minute}`; // Unique key for unavailable times
+          return unavailableKey === timeKey; // Return true if the times match
+            });
+         });
+         setListOfAvailableTimes(availableTimes);
        
         }
     }, [apptsBookedWithDoctor, selectedDate]); 
@@ -103,25 +145,32 @@ export default function BookWithDoctor() {
          onChange={(newValue) => setSelectedDate(newValue)} />
 
         </div>
-        {/* <div>
-            APPOINTMENT TIME BUTTONS 
-            {appointmentTimes.map((time) => (
+        { listOfAvailableTimes &&
+        <div>
+            {listOfAvailableTimes.map((e, index) => (
             <button
-                  type="button"
-                  className=""
-                  aria-label={getAMPMFrm24Hrs(time)}
-                  onClick={(event) => { onTimeSelect(event); }}
+                type = "button"
+                className=''
+                key = {index}
+                onClick={() => { handleTimeClick(e)}}
                 >
-                  { getAMPMFrm24Hrs(time) }
+                 {e.hour}:{e.minute === 0 ? '00':e.minute}
+                
                 </button>
             ))}
         </div>
+        }
+        {selectedTime && 
         <div>
-            <h4>
-                Appointment with Dr. {doctor[0].last_name}
-                {timeString} (30 min)
-            </h4>
-        </div> */}
+            <button
+            className=''
+            onClick= {handleSubmitAppt}
+            >
+                Book Appointment with Dr. {doctor[0].last_name} at {selectedTime.hour}:{selectedTime.minute === 0 ? '00' : selectedTime.minute}
+            </button>
+        </div>
+        }
+   
 
 
     </div>
