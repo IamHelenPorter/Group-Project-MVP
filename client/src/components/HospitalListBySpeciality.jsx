@@ -28,7 +28,7 @@ function HospitalListBySpeciality() {
       <h2>Hospitals Specialising in {speciality}</h2>
       <ul>
           {hospitals.length > 0 ? (
-            hospitals.map((hospital) => (
+            hospitals.map(hospital => (
         <li key={hospitals.hospital_id}> 
         <button onClick={() => navigate(`/doctor/hospitals/${hospitals.hospital_id}/speciality/${speciality}/doctor`)}>
           {hospitals.name} - {hospitals.address}
