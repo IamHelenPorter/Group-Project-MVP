@@ -4,12 +4,17 @@ import { DateTime, Duration } from 'luxon';
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import "./BookWithDoctor.css"
 import { list } from '@chakra-ui/react';
 
 
 export default function BookWithDoctor() {
 
     const now = DateTime.now()
+
+    const shouldDisableDate = (date) => {
+        return date.isWeekend; 
+    };
    
     const { doctor_id } = useParams();
     
@@ -131,50 +136,53 @@ export default function BookWithDoctor() {
 
   return (
     <div>
-        <h1>Book With Doctor</h1>
-        {doctor &&
-        <div>
-        <img src={doctor[0].image} alt="Image of Doctor" /> 
-        <h2>Dr. {doctor[0].first_name} {doctor[0].last_name} </h2>
-        <h3>{doctor[0].qualifications}</h3>
-        <h3>{doctor[0].speciality}</h3>
-        <h3>{doctor[0].name}</h3>
-        <h4>{doctor[0].address}</h4>
-        </div>
-        }
-        <div>
-        <DatePicker  value={selectedDate}
-         onChange={(newValue) => setSelectedDate(newValue)} />
+        <h1 className='header'>Book With Doctor</h1>
+            <div className='content'>
+            {doctor &&
+            <div className='doctor-info'>
+            <img src={doctor[0].image} alt="Image of Doctor" /> 
+            <h2>Dr. {doctor[0].first_name} {doctor[0].last_name} </h2>
+            <h3>{doctor[0].qualifications}</h3>
+            <h3>{doctor[0].speciality}</h3>
+            <h3>{doctor[0].name}</h3>
+            <h4>{doctor[0].address}</h4>
+            </div>
+            }
+            <div className='calendar-container'>
+                <div className='calendar'>
+                <DatePicker  value={selectedDate}
+                onChange={(newValue) => setSelectedDate(newValue)} 
+                shouldDisableDate={shouldDisableDate}
+                />
 
+                </div>
+                { listOfAvailableTimes &&
+                <div className='buttons'>
+                    {listOfAvailableTimes.map((e, index) => (
+                    <button
+                        type = "button"
+                        className=''
+                        key = {index}
+                        onClick={() => { handleTimeClick(e)}}
+                        >
+                        {e.hour}:{e.minute === 0 ? '00':e.minute}
+                        
+                        </button>
+                    ))}
+                </div>
+                }
+                {selectedTime && 
+                <div className='booking-button'>
+                    <button
+                    className=''
+                    onClick= {handleSubmitAppt}
+                    >
+                        Book Appointment with Dr. {doctor[0].last_name} at {selectedTime.hour}:{selectedTime.minute === 0 ? '00' : selectedTime.minute}
+                    </button>
+                </div>
+                }
+            </div>
         </div>
-        { listOfAvailableTimes &&
-        <div>
-            {listOfAvailableTimes.map((e, index) => (
-            <button
-                type = "button"
-                className=''
-                key = {index}
-                onClick={() => { handleTimeClick(e)}}
-                >
-                 {e.hour}:{e.minute === 0 ? '00':e.minute}
-                
-                </button>
-            ))}
-        </div>
-        }
-        {selectedTime && 
-        <div>
-            <button
-            className=''
-            onClick= {handleSubmitAppt}
-            >
-                Book Appointment with Dr. {doctor[0].last_name} at {selectedTime.hour}:{selectedTime.minute === 0 ? '00' : selectedTime.minute}
-            </button>
-        </div>
-        }
-   
-
-
     </div>
   )
 }
