@@ -1,4 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   Avatar,
   AvatarBadge,
@@ -19,6 +21,36 @@ import {
 } from '@chakra-ui/react'
 
 function Profile() {
+
+  const [privateData, setPrivateData] = useState(null);
+
+  // get private user data on page load -> useEffect()!
+  useEffect(()=>{
+    requestData();
+  }, []);
+  console.log(privateData)
+
+  const navigate = useNavigate();
+
+  const requestData = async () => {
+    //0. if no token then redirect to login, don't let the user see the page
+     let token = localStorage.getItem("token")
+     if (!token) navigate("/")
+
+    //1. send post request including authorization header
+      let options = {
+        method: "GET",
+        headers: {"authorization": `Bearer ${token}`}
+      }
+
+      let results = await fetch("http://localhost:4000/api/private", options);
+      let data = await results.json();
+
+    //2. store response private data
+      setPrivateData(data);
+  };
+
+
   const [userProfile, setUserProfile] = useState(null)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -39,6 +71,12 @@ function Profile() {
     }
 
     onOpen()
+  }
+
+  const test = {
+    first_name: "Alia",
+    last_name: "Bravo",
+    username: "aliabravo123"
   }
 
   return (
@@ -88,15 +126,27 @@ function Profile() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <VStack spacing={1}>
-        <Heading as="h3" fontSize="xl" color="brand.dark">
-          Tim Cook
-        </Heading>
-        <Text color="brand.gray" fontSize="sm">
-          CEO of Apple
-        </Text>
-      </VStack>
+
+      <div>
+        {privateData &&(
+          <VStack spacing={1}>
+          <Heading as="h3" fontSize="xl" color="brand.dark">
+            {`${privateData.first_name} ${privateData.last_name}`}
+          </Heading>
+          <Text color="brand.gray" fontSize="sm">
+            {`${privateData.username}`}
+          </Text>
+        </VStack>
+  
+
+        )}
+      
+      </div>
+      
+
     </VStack>
+      
+      
   )
 }
 
