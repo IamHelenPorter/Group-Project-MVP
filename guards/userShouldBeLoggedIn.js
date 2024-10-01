@@ -12,7 +12,6 @@ function userShouldBeLoggedIn (req, res, next) {
     res.status(400).send({ message: "please provide a token" });
     return;
   } else {
-    //create UserID
     
     //verify token
     jwt.verify(token, supersecret, async function(err,decoded) {

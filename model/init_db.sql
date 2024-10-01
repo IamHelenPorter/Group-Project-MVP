@@ -99,3 +99,28 @@ VALUES
 (6, 'Neurology', 2, 'MBBS, MD (Neurology)'),             -- Michael Johnson at Mongolia-Japan Teaching Hospital (hospital_id = 2)
 (7, 'Pediatrics', 1, 'MBBS, MD (Pediatrics)'),           -- Laura Williams at Songdo Hospital (hospital_id = 1)
 (8, 'Dermatology', 3, 'MBBS, MD (Dermatology)');         -- David Brown at Grand Med Hospital (hospital_id = 3)
+
+INSERT INTO `appointments` (`user_id`, `doctor_id`, `start_time`, `status`) 
+VALUES 
+(13, 1, '2024-11-28 06:30:00', 'booked'),
+(13, 6, '2024-10-08 08:30:00', 'booked'),
+(13, 4, '2024-12-06 09:00:00', 'booked'),
+(13, 3, '2024-12-19 16:00:00', 'booked'),
+(13, 5, '2024-11-14 08:00:00', 'booked'),
+(14, 3, '2024-12-20 17:30:00', 'booked'),
+(14, 2, '2024-12-27 00:00:00', 'booked'),
+(14, 6, '2024-12-10 00:30:00', 'booked'),
+(14, 6, '2024-11-12 18:00:00', 'booked'),
+(14, 1, '2024-10-26 21:30:00', 'booked'),
+(15, 6, '2024-10-18 14:00:00', 'booked'),
+(15, 4, '2024-12-19 02:30:00', 'booked'),
+(15, 1, '2024-10-10 02:30:00', 'booked'),
+(15, 5, '2024-11-18 12:00:00', 'booked'),
+(15, 2, '2024-12-19 12:00:00', 'booked'),
+(17, 2, '2024-12-01 03:00:00', 'booked'),
+(17, 4, '2024-12-29 02:00:00', 'booked'),
+(17, 6, '2024-12-11 22:30:00', 'booked'),
+(17, 2, '2024-10-18 11:00:00', 'booked'),
+(17, 3, '2024-10-30 16:00:00', 'booked');
+
+

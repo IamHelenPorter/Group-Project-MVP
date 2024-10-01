@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
 require("dotenv").config();
-const userShouldBeLoggedIn = require("../guards/userShouldBeLoggedIn")
+const userShouldBeLoggedIn = require("../guards/userShouldBeLoggedIn");
 
 var jwt = require("jsonwebtoken");
 var bcrypt =require("bcrypt");
@@ -165,18 +165,84 @@ router.delete('/doctor/:id', async (req, res) => {
 
 //GET ALL APPOINTMENTS THAT A SPECIFIC USER HAS
 router.get('/appointments/user', userShouldBeLoggedIn, async (req, res) => {
+  try {
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.speciality, doctor.hospital_id, hospitals.name 
+      FROM appointments 
+      LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+      LEFT JOIN user ON doctor.user_id = user.user_id
+      LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
+      WHERE appointments.user_id = ${req.userID} 
+      AND appointments.start_time > NOW() 
+      ORDER BY start_time ASC;`);
+
+    // Format each appointment's start_time using JavaScript's native Date object
+    const formattedResults = results.data.map(appointment => {
+      let formattedTime = '';
+      if (appointment.start_time) {
+        const dateObj = new Date(appointment.start_time);
+        
+        if (!isNaN(dateObj.getTime())) {
+          // Format the date as "Friday, 18 October 2024, 3am"
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+          formattedTime = dateObj.toLocaleString('en-GB', options);  // Use 'en-GB' locale for correct date formatting
+        } else {
+          formattedTime = 'Invalid DateTime';  // Handle invalid dates
+        }
+      }
+
+      // Return the appointment with the formatted start_time
+      return {
+        ...appointment,
+        start_time: formattedTime  // Overwrite the start_time with the formatted version
+      };
+    });
+
+    res.send(formattedResults);  // Send formatted results
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+//GET ALL PAST APPOINTMENTS THAT A SPECIFIC USER HAS
+router.get('/pastappointments/user', userShouldBeLoggedIn, async (req, res) => {
 
   //the variable of the userID at the end of the endpoint is no longer needed because to access this now uses a token
   //the variable at hand is req.userID because we are using the middleware to ensure the user is logged in 
   
   try {
-    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospitals.name 
-       FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
-       LEFT JOIN user ON doctor.user_id = user.user_id
-        LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
-        WHERE appointments.user_id = ${req.userID};`);
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.speciality, doctor.hospital_id, hospitals.name 
+      FROM appointments 
+      LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+      LEFT JOIN user ON doctor.user_id = user.user_id
+      LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
+      WHERE appointments.user_id = ${req.userID} 
+      AND appointments.start_time < NOW() 
+    ORDER BY start_time DESC;
+      `);
 
-    res.send(results.data)
+    // Format each appointment's start_time using JavaScript's native Date object
+    const formattedResults = results.data.map(appointment => {
+      let formattedTime = '';
+      if (appointment.start_time) {
+        const dateObj = new Date(appointment.start_time);
+        
+        if (!isNaN(dateObj.getTime())) {
+          // Format the date as "Friday, 18 October 2024, 3am"
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+          formattedTime = dateObj.toLocaleString('en-GB', options);  // Use 'en-GB' locale for correct date formatting
+        } else {
+          formattedTime = 'Invalid DateTime';  // Handle invalid dates
+        }
+      }
+
+      // Return the appointment with the formatted start_time
+      return {
+        ...appointment,
+        start_time: formattedTime  // Overwrite the start_time with the formatted version
+      };
+    });
+
+    res.send(formattedResults);  // Send formatted results
   } catch (err) {
     res.status(500).send({error: err.message});
   }

@@ -34,7 +34,7 @@ function App() {
     // send a POST request to /api/auth/login with the username and password
     try {
       // axios return a data object with the response from the server
-      const { data } = await axios("/api/login", {
+      const { data } = await axios("http://localhost:4000/api/login", {
         method: "POST",
         data: credentials,
       });

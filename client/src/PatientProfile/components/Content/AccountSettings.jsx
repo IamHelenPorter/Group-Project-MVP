@@ -6,7 +6,7 @@ import { FormControl, FormLabel } from '@chakra-ui/react'
 
 function AccountSettings() {
 
-  const [apptData, setApptData] = useState(null);
+  const [apptData, setApptData] = useState([]);
 
   // get private user data on page load -> useEffect()!
   useEffect(()=>{
@@ -40,18 +40,32 @@ function AccountSettings() {
       alignItems="center"
       justifyContent="space-between"
     >
-      <FormLabel
+
+      <div className='appts-list'>
+        {apptData.map((appt, i) => (
+          <div className='appt-card' key={i}>
+            <h3>When: {appt.start_time}</h3>
+            <p>Status: {appt.status}</p>
+            <p>Doctor: {appt.first_name} {appt.last_name}</p>
+            <p>Department: {appt.speciality} </p>
+            <p>Location: {appt.name}</p>
+            <p>EDIT APPT / DELETE APPT</p>
+            
+          </div>
+        ))}
+      </div>
+      {/* <FormLabel
         htmlFor="notificationEmails"
         mb={0}
         cursor="pointer"
         userSelect="none"
       >
         Testing
-      </FormLabel>
+      </FormLabel> */}
       
     </FormControl>
   )
   
 }
 
-export default AccountSettings
+export default AccountSettings;
