@@ -15,6 +15,7 @@ function Search() {
     axios.get(`/api/search?query=${query}`)
       .then(response => {
         setResults(response.data);
+        console.log(response)
       })
       .catch(error => {
         console.error("Error fetching search results:", error);
