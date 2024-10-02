@@ -72,7 +72,6 @@ VALUES
 ('John', 'Doe', 'johndoe', 'password123', 'john.doe@example.com', 'patient', '2024-09-13 10:00:00', '2024-09-13 10:00:00', '1985-05-12', NULL),
 ('Sarah', 'Connor', 'sconnor', 'securepass456', 'sarah.connor@example.com', 'doctor', '2024-09-13 11:00:00', '2024-09-13 11:00:00', '1990-07-15', 'https://plus.unsplash.com/premium_photo-1664475450083-5c9eef17a191?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZmVtYWxlJTIwZG9jdG9yfGVufDB8fDB8fHww'),
 ('Alice', 'Smith', 'asmith', 'mypassword789', 'alice.smith@example.com', 'admin', '2024-09-13 12:00:00', '2024-09-13 12:00:00', '1980-11-25', NULL),
-
 ('James', 'Bond', 'jbond', 'securepass007', 'james.bond@example.com', 'doctor', '2024-09-13 12:00:00', '2024-09-13 12:00:00', '1975-11-25', 'https://media.istockphoto.com/id/1346124900/photo/confident-successful-mature-doctor-at-hospital.jpg?s=612x612&w=0&k=20&c=S93n5iTDVG3_kJ9euNNUKVl9pgXTOdVQcI_oDGG-QlE='),
 ('Emily', 'Stone', 'estone', 'password123', 'emily.stone@example.com', 'doctor', '2024-09-14 09:00:00', '2024-09-14 09:00:00', '1985-06-10', 'https://media.istockphoto.com/id/638647058/photo/we-offer-our-patients-premium-healthcare-here.jpg?s=612x612&w=0&k=20&c=pek5ehwgsZNPemeEh4bObQ1U5DRPEs0WHleosG-daa8='),
 ('Michael', 'Johnson', 'mjohnson', 'strongpass456', 'michael.johnson@example.com', 'doctor', '2024-09-14 10:30:00', '2024-09-14 10:30:00', '1978-04-17', 'https://media.istockphoto.com/id/1390000431/photo/shot-of-a-mature-doctor-using-a-digital-tablet-in-a-modern-hospital.jpg?s=612x612&w=0&k=20&c=ofnikeDwvLhhEvLpSuQME5kWclGchqUKSHQFdQ4mcWo='),
@@ -81,11 +80,13 @@ VALUES
 
 
 
-INSERT INTO hospitals (name, address, emergency, departments)
+INSERT INTO `hospitals` (`name`, `address`, `emergency`, `departments`)
 VALUES ('Songdo Hospital', 'Sambuu Street 32, Ulaanbaatar, Mongolia', true, 'General Surgery, Urology, Cardiology');
-INSERT INTO hospitals (name, address, emergency, departments)
+
+INSERT INTO `hospitals` (`name`, `address`, `emergency`, `departments`)
 VALUES ('Mongolia-Japan Teaching Hospital', 'Bayanzurkh District, Ulaanbaatar, Mongolia', true, 'Internal Medicine, Neurology, Orthopedics');
-INSERT INTO hospitals (name, address, emergency, departments)
+
+INSERT INTO `hospitals` (`name`, `address`, `emergency`, `departments`)
 VALUES ('Grand Med Hospital', 'Chinggis Avenue 16, Ulaanbaatar, Mongolia', true, 'Radiology, Imaging, Orthopedics, Orthopedic Surgery');
 
 
