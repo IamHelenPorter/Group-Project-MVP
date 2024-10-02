@@ -8,7 +8,7 @@ function PatientProfile() {
    
     return (
 
-        <SimpleBar style={{ maxHeight: '100vh' }}>
+        <SimpleBar >
       <ChakraProvider theme={theme}>
        <Cover />
         <Main />

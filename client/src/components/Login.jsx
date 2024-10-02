@@ -30,11 +30,12 @@ function Login() {
       e.preventDefault();
       //  update this function to use the login function from the context
       auth.login(credentials);
-      navigate("/")
+      navigate("/profile")
     };
   
     const logout = () => {
       auth.logout();
+      navigate("/")
     };
 
 

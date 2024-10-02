@@ -66,19 +66,38 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get("/private", userShouldBeLoggedIn, async (req,res) => {
+ 
+ router.get("/private", userShouldBeLoggedIn, async (req, res) => {
+
+  // if I reach next() in userShouldBeLoggedIn, it means my request, which is an object, now has a key called "userID", see line 26 of js file
 
   try {
-    // if I reach next() in userShouldBeLoggedIn, it means my request, which is an object, now has a key called "userID", see line 26 of js file
-
-    let results = await db(`SELECT * FROM user WHERE user_id =${req.userID};`)
+    // Fetch user data from the database
+    let results = await db(`SELECT * FROM user WHERE user_id = ${req.userID};`);
     
-    res.status(200).send(results.data[0])
+    // Extract the user data from the query result
+    let user = results.data[0];
+    
+    // Format the date_of_birth using JavaScript's native Date object
+    if (user.date_of_birth) {
+      const dateObj = new Date(user.date_of_birth);
 
-  } catch(err){
+      if (!isNaN(dateObj.getTime())) {
+        // Format the date as "04 MAY 1995"
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        user.date_of_birth = dateObj.toLocaleDateString('en-GB', options).toUpperCase();  // Format and convert to uppercase
+      } else {
+        user.date_of_birth = 'Invalid Date';  // Handle invalid dates
+      }
+    }
+
+    // Send the formatted user data back to the client
+    res.status(200).send(user);
+
+  } catch (err) {
     res.status(500).send(err);
   }
-})
+});
 
 
 //GET ALL DOCTORS INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
@@ -280,24 +299,53 @@ router.post('/appointments', async (req, res) => {
 
 
 //DELETE APPOINTMENT IN USER & DOCTOR PROFILE
-router.delete('/appointments/:userid/:id', async (req, res) => {
+router.delete('/appointments/:id', userShouldBeLoggedIn, async (req, res) => {
   const { id } = req.params;
-  const appointmentId = Number(id)
-
-  const {userid} = req.params;
+  const appointmentId = Number(id);
 
   try {
+    // Delete the appointment
     await db(`DELETE FROM appointments WHERE appointment_id = ${appointmentId};`);
-    const results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.hospital_id, hospitals.name 
-       FROM appointments LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
-       LEFT JOIN user ON doctor.user_id = user.user_id
-        LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
-        WHERE appointments.user_id = ${userid};`);
-    res.send(results.data);
+
+    // Fetch the upcoming appointments
+    let results = await db(`SELECT appointments.*, doctor.doctor_id, user.first_name, user.last_name, doctor.speciality, doctor.hospital_id, hospitals.name 
+      FROM appointments 
+      LEFT JOIN doctor ON appointments.doctor_id = doctor.doctor_id 
+      LEFT JOIN user ON doctor.user_id = user.user_id
+      LEFT JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id 
+      WHERE appointments.user_id = ${req.userID} 
+      AND appointments.start_time > NOW() 
+      ORDER BY start_time ASC;`);
+
+    // Format each appointment's start_time using JavaScript's native Date object
+    const formattedResults = results.data.map(appointment => {
+      let formattedTime = '';
+      if (appointment.start_time) {
+        const dateObj = new Date(appointment.start_time);
+
+        if (!isNaN(dateObj.getTime())) {
+          // Format the date as "Friday, 18 October 2024, 3am"
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+          formattedTime = dateObj.toLocaleString('en-GB', options);  // Use 'en-GB' locale for correct date formatting
+        } else {
+          formattedTime = 'Invalid DateTime';  // Handle invalid dates
+        }
+      }
+
+      // Return the appointment with the formatted start_time
+      return {
+        ...appointment,
+        start_time: formattedTime  // Overwrite the start_time with the formatted version
+      };
+    });
+
+    // Send the formatted results back to the client
+    res.send(formattedResults);
   } catch (err) {
-    res.status(500).send({error: err.message});
+    res.status(500).send({ error: err.message });
   }
-})
+});
+
 
 
 //GET ALL USERS
@@ -344,6 +392,66 @@ router.delete("/users/:id", async (req, res) => {
 
   } catch (err) {
     res.send(err)
+  }
+});
+
+/* Update user information (PUT) */
+router.put("/update", userShouldBeLoggedIn, async (req, res) => {
+  try {
+    
+    // add currentpassword and newpassword later once we update the database
+    const { image, email, username, currentpassword, newpassword } =
+      req.body;
+
+    if (image) {
+      let sql = `
+      UPDATE user SET image='${image}' WHERE user_id =${req.userID}`;
+      await db(sql);
+    }
+
+    if (username) {
+      let sql = `
+      UPDATE user SET username='${username}' WHERE user_id =${req.userID}`;
+      await db(sql);
+    }
+
+    if (email) {
+      let sql = `
+      UPDATE user SET email='${email}' WHERE user_id =${req.userID}`;
+      await db(sql);
+    }
+
+    if (newpassword) {
+      let results = await db(`SELECT * FROM users WHERE user_id = ${req.userID}`);
+      if (results.data.length === 0) {
+        // if username not found
+        res.status(401).send({ error: "Login failed" });
+      } else {
+        let user = results.data[0]; // the user's row/record from the DB
+
+        let passwordsEqual = await bcrypt.compare(
+          currentpassword,
+          user.password
+        );
+
+        if (passwordsEqual) {
+          let hashedPassword = await bcrypt.hash(
+            newpassword,
+            BCRYPT_WORK_FACTOR
+          );
+
+          let sql = `
+              UPDATE users SET password ='${hashedPassword}' WHERE user_id = ${req.userID}`;
+          await db(sql);
+        }
+      }
+    }
+
+    const results = await db("SELECT * FROM user;");
+    res.status(200).send(results.data);
+    
+  } catch (error) {
+    res.send({ message: error });
   }
 });
 

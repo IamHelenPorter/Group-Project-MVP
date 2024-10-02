@@ -18,7 +18,7 @@ function Sidebar({privateData}) {
       style={{ transform: 'translateY(-100px)' }}
     >
       <Profile privateData={privateData} />
-      <Data />
+      <Data privateData={privateData}/>
       <Actions />
     </Box>
   )
