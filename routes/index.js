@@ -408,35 +408,65 @@ router.get('/doctor/hospitals/:hospital_id/speciality/:speciality/doctor', async
 
 // Search doctors, hospitals, or specialities
 router.get('/search', async (req, res) => {
-  const { query } = req.query;
-
+  const { query } = req.query;  // Get the search query from the request
+  
   try {
-    const results = await db(`
-      SELECT 'doctor' as type, doctor.doctor_id, user.first_name, user.last_name, doctor.speciality, hospitals.name AS hospital_name
+    const doctorResults = await db(`
+      SELECT doctor.doctor_id, doctor.speciality, user.first_name, user.last_name, hospitals.name AS hospital_name, 'doctor' AS type
       FROM doctor
       JOIN user ON doctor.user_id = user.user_id
       JOIN hospitals ON doctor.hospital_id = hospitals.hospital_id
-      WHERE user.first_name LIKE '%${query}%' 
-      OR user.last_name LIKE '%${query}%'
-      
-      UNION ALL
-      
-      SELECT 'hospital' as type, hospitals.hospital_id, NULL as first_name, NULL as last_name, NULL as speciality, hospitals.name AS hospital_name
-      FROM hospitals
-      WHERE hospitals.name LIKE '%${query}%'
-      
-      UNION ALL
-      
-      SELECT 'speciality' as type, NULL as doctor_id, NULL as first_name, NULL as last_name, doctor.speciality, NULL as hospital_name
+      WHERE user.first_name LIKE '%${query}%' OR user.last_name LIKE '%${query}%' OR doctor.speciality LIKE '%${query}%';
+    `);
+    
+  
+    const hospitalResults = await db(`
+      SELECT hospital_id, name AS hospital_name, 'hospital' AS type 
+      FROM hospitals 
+      WHERE name LIKE '%${query}%';
+    `);
+    
+    
+    const specialityResults = await db(`
+      SELECT DISTINCT doctor.speciality AS speciality, 'speciality' AS type 
       FROM doctor
       WHERE doctor.speciality LIKE '%${query}%';
     `);
+   
+    const results = [...doctorResults.data, ...hospitalResults.data, ...specialityResults.data];
+  
 
-    res.json(results);
+    res.send({ data: results });  // Send the combined results to the frontend
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    console.error('Error performing search:', err);
+    res.status(500).json({ error: 'Failed to perform search' });
   }
 });
+
+router.get('/doctor/:doctor_id', async (req, res) => {
+  const { doctor_id } = req.params;
+  try {
+    const doctor = await db(`SELECT * FROM doctor WHERE doctor_id = ${doctor_id}`);
+    res.json(doctor);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/hospitals/:hospital_id', async (req, res) => {
+  const { hospital_id } = req.params;
+  try {
+    const results = await db(`SELECT * FROM hospitals WHERE hospital_id = ${hospital_id};`);
+    res.json(results[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+
 
 module.exports = router;
 
