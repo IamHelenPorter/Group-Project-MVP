@@ -42,7 +42,7 @@ export default function BookWithDoctor() {
         }, [doctor]);
         
     const fetchDoctor = () => {
-        axios.get(`/api/doctor/${doctor_id}`)
+        axios.get(`/api/doctor/${doctor_id}/book`)
         .then(response => {
           setDoctor(response.data);
         })

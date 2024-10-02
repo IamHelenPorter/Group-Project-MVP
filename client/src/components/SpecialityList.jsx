@@ -11,7 +11,6 @@ function SpecialityList() {
     axios.get('/api/speciality')
       .then(response => {
         setSpecialities(response.data.data);
-        console.log(specialities)
       })
       .catch(error => {
         console.error("Error fetching specialities:", error);

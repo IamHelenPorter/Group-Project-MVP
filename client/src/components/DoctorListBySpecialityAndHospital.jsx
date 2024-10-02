@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function DoctorListBySpecialityAndHospital() {
   const { hospital_id, speciality } = useParams();
   const [doctors, setDoctors] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`/api/doctor/hospitals/${hospital_id}/speciality/${speciality}/doctor`)
       .then(response => {
-        setDoctors(response.data);
+        setDoctors(response.data.data);
       })
       .catch(error => {
         console.error("Error fetching doctors:", error);
@@ -29,7 +30,10 @@ function DoctorListBySpecialityAndHospital() {
         {doctors.length > 0 ? (
           doctors.map(doctor => (
             <li key={doctor.doctor_id}>
-              {doctor.first_name} {doctor.last_name} - {doctor.qualifications}
+              {/* Navigate to BookWithDoctor page */}
+              <button onClick={() => navigate(`/doctor/${doctor.doctor_id}/book`)}>
+                Dr. {doctor.first_name} {doctor.last_name} - {doctor.qualifications}
+              </button>
             </li>
           ))
         ) : (
