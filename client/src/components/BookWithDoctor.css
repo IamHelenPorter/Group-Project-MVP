@@ -1,0 +1,72 @@
+body {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif; 
+}
+
+.image {
+max-width: 350px;
+}
+
+.header {
+    text-align: center; 
+}
+
+.content {
+    display: flex; 
+    width: 100%; 
+    margin-top: 20px; 
+}
+
+.doctor-info {
+    flex: 1;
+    padding-right: 20px; 
+}
+
+.calendar-section {
+    flex: 1; 
+    display: flex;
+    flex-direction: column; 
+}
+
+.calendar {
+    flex: 1; 
+    border: 1px solid #ccc; 
+    padding: 20px; 
+}
+
+.buttons {
+    /* max-width: 900px; */
+    margin-top: 10px;
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px; 
+}
+
+.buttons button {
+    padding: 10px; /* Ensure grid buttons have uniform padding */
+    font-size: 16px; /* Smaller font size for grid buttons */
+}
+
+.booking-button {
+    margin-top: 20px; /* Adds space between the grid and the submit button */
+    display: flex; /* Center the button */
+    justify-content: center;
+    max-width: inherit;
+}
+
+.submit-button {
+    padding: 10px 30px; 
+  font-size: 20px;  
+  color: rgb(34, 29, 178);  
+  border: 2px solid #3052c5; 
+  
+}
+
+.submit-button:hover {
+    background-color: #c5cfd7;  
+      
+}

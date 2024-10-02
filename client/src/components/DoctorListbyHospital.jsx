@@ -11,7 +11,8 @@ function DoctorListByHospital() {
   useEffect(() => {
     axios.get(`/api/hospitals/${hospital_id}/doctor`)
       .then(response => {
-        setDoctors(response.data);
+        setDoctors(response.data.data);
+        console.log(doctors)
       })
       .catch(error => {
         console.error("Error fetching doctors:", error);
@@ -30,8 +31,8 @@ function DoctorListByHospital() {
         {doctors.length > 0 ? (
           doctors.map(doctor => (
             <li key={doctor.doctor_id}>
-              {/* Navigate to doctor profile */}
-              <button onClick={() => navigate(`/doctor/${doctor.doctor_id}`)}>
+              {/* Navigate to BookWithDoctor page */}
+              <button onClick={() => navigate(`/doctor/${doctor.doctor_id}/book`)}>
                 Dr. {doctor.first_name} {doctor.last_name} - {doctor.qualifications}
               </button>
             </li>

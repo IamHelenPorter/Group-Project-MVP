@@ -3,19 +3,19 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function HospitalProfile() {
-  const { id } = useParams(); 
+  const { hospital_id } = useParams(); 
   const [hospital, setHospital] = useState(null);
 
 
   useEffect(() => {
-    axios.get(`/api/hospitals/${id}`) 
+    axios.get(`/api/hospitals/${hospital_id}`) 
       .then(response => {
         setHospital(response.data[0]); 
       })
       .catch(error => {
         console.error("There was an error fetching the hospital details!", error);
       });
-  }, [id]);
+  }, [hospital_id]);
 
   if (!hospital) return <p>Loading hospital details...</p>;
 
