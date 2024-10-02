@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 import {
   Avatar,
   AvatarBadge,
-  Badge,
   Button,
   Heading,
   HStack,
@@ -15,6 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Input,
   Text,
   useDisclosure,
   VStack,
@@ -22,45 +21,58 @@ import {
 
 function Profile({privateData}) {
 
-  
+  const [userProfile, setUserProfile] = useState(privateData?.image);
+  const [imageUrl, setImageUrl] = useState(''); // State for the input URL
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Function to handle submission of the image URL
+  useEffect(() => {
+    setUserProfile(privateData?.image);
+  }, [privateData]);
 
-  const [userProfile, setUserProfile] = useState(null)
+  const handleSubmitImage = async () => {
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const profileImage = useRef(null)
+    let token = localStorage.getItem("token")
+     if (!token) navigate("/")
+    try {
+      const response = await fetch('http://localhost:4000/api/update', {
+        method: 'PUT',
+        headers: {
+          "authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: imageUrl, // Send the image URL to the backend
+        }),
+      });
 
-  const openChooseImage = () => {
-    profileImage.current.click()
-  }
+      if (!response.ok) {
+        throw new Error('Failed to update the profile image');
+      }
 
-  const changeProfileImage = event => {
-    const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg']
-    const selected = event.target.files[0]
-
-    if (selected && ALLOWED_TYPES.includes(selected.type)) {
-      let reader = new FileReader()
-      reader.onloadend = () => setUserProfile(reader.result)
-      return reader.readAsDataURL(selected)
+      const data = await response.json();
+      setUserProfile(imageUrl); // Update the avatar with the new image URL
+      onClose(); // Close the modal
+    } catch (error) {
+      console.error('Error:', error.message);
     }
+  };
 
-    onOpen()
-  }
-
-  const test = {
-    first_name: "Alia",
-    last_name: "Bravo",
-    username: "aliabravo123"
-  }
+  //using this variable in name under Avatar crashes the website
+  // let fullName = `${privateData.first_name} ${privateData.last_name}`
 
   return (
-    <VStack spacing={3} py={5} borderBottomWidth={1} borderColor="brand.light">
-      <Avatar
-        size="2xl"
-        name="Tim Cook"
-        cursor="pointer"
-        onClick={openChooseImage}
-        src={userProfile ? userProfile : '/img/tim-cook.jpg'}
+
+      <div>
+        {privateData &&(
+
+          <VStack spacing={3} py={5} borderBottomWidth={1} borderColor="brand.light">
+           <Avatar
+            size="2xl"
+            name= "USER"
+            cursor="pointer"
+          onClick={onOpen} // Open modal when avatar is clicked
+        src={userProfile ? userProfile : 'https://img.freepik.com/free-photo/closeup-view-domestic-cat-with-blurred-background_181624-17941.jpg?w=996&t=st=1727842586~exp=1727843186~hmac=4f8dedd753e52005870059c9f32834394367735a82b140c02c3b32b415719849'} 
       >
         <AvatarBadge bg="brand.blue" boxSize="1em">
           <svg width="0.4em" fill="currentColor" viewBox="0 0 20 20">
@@ -71,38 +83,61 @@ function Profile({privateData}) {
             />
           </svg>
         </AvatarBadge>
-      </Avatar>
-      <input
-        hidden
-        type="file"
-        ref={profileImage}
-        onChange={changeProfileImage}
-      />
+          </Avatar>
+
+          {/* Modal for submitting URL */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Something went wrong</ModalHeader>
+         <ModalHeader>Enter a new profile picture URL</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>File not supported!</Text>
-            <HStack mt={1}>
-              <Text color="brand.cadet" fontSize="sm">
-                Supported types:
-              </Text>
-              <Badge colorScheme="green">PNG</Badge>
-              <Badge colorScheme="green">JPG</Badge>
-              <Badge colorScheme="green">JPEG</Badge>
-            </HStack>
+           <Input
+              placeholder="https://example.com/your-image.jpg"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)} // Update state with input value
+            />
           </ModalBody>
-
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button colorScheme="blue" onClick={handleSubmitImage}>
+              Submit
+            </Button>
+            <Button variant="ghost" onClick={onClose} ml={3}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <div>
-        {privateData &&(
+          {/* <input
+            hidden
+            type="file"
+            ref={profileImage}
+            onChange={changeProfileImage}
+          />
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Something went wrong</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <Text>File not supported!</Text>
+                <HStack mt={1}>
+                  <Text color="brand.cadet" fontSize="sm">
+                    Supported types:
+                  </Text>
+                  <Badge colorScheme="green">PNG</Badge>
+                  <Badge colorScheme="green">JPG</Badge>
+                  <Badge colorScheme="green">JPEG</Badge>
+                </HStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button onClick={onClose}>Close</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal> */}
+
           <VStack spacing={1}>
           <Heading as="h3" fontSize="xl" color="brand.dark">
             {`${privateData.first_name} ${privateData.last_name}`}
@@ -112,13 +147,13 @@ function Profile({privateData}) {
           </Text>
         </VStack>
   
-
+       </VStack>
         )}
       
       </div>
       
 
-    </VStack>
+    
       
       
   )

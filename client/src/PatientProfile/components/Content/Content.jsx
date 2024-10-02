@@ -1,12 +1,11 @@
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
 
-import AccountSettings from './AccountSettings'
-import Actions from './Actions'
 import UpcomingAppts from './UpcomingAppts'
-import Notifications from './Notifications'
+import PastAppts from './PastAppts'
+import AccountSettings from './AccountSettings'
 
-const Content = () => {
-  const tabs = ['Upcoming Appointments','Past Appointments', 'Account Settings']
+const Content = ({privateData}) => {
+  const tabs = ['Upcoming Appointments','Past Appointments']
 
   return (
     <Box
@@ -43,18 +42,17 @@ const Content = () => {
 
         <TabPanels px={3} mt={5}>
           <TabPanel>
-            <AccountSettings />
-          </TabPanel>
-          <TabPanel>
             <UpcomingAppts />
           </TabPanel>
           <TabPanel>
-            <Notifications />
+            <PastAppts />
           </TabPanel>
+          {/* <TabPanel>
+            <AccountSettings privateData={privateData} />
+          </TabPanel> */}
         </TabPanels>
       </Tabs>
 
-      <Actions />
     </Box>
   )
 }

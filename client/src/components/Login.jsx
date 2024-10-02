@@ -1,6 +1,5 @@
 import { useState, useContext } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
 function Login() {
@@ -31,11 +30,12 @@ function Login() {
       e.preventDefault();
       //  update this function to use the login function from the context
       auth.login(credentials);
-      navigate("/")
+      navigate("/profile")
     };
   
     const logout = () => {
       auth.logout();
+      navigate("/")
     };
 
 
