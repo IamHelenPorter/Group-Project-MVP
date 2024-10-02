@@ -7,12 +7,9 @@ body {
     font-family: Arial, sans-serif; 
 }
 
-/* .container {
-    display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    padding: 20px;
-} */
+.image {
+max-width: 350px;
+}
 
 .header {
     text-align: center; 
@@ -21,29 +18,55 @@ body {
 .content {
     display: flex; 
     width: 100%; 
-    margin-top: 20px; /* Space between header and content */
+    margin-top: 20px; 
 }
 
 .doctor-info {
-    flex: 1; /* Take up remaining space */
-    padding-right: 20px; /* Space between doctor-info and calendar */
+    flex: 1;
+    padding-right: 20px; 
 }
 
 .calendar-section {
-    flex: 1; /* Take up remaining space */
+    flex: 1; 
     display: flex;
-    flex-direction: column; /* Stack calendar and buttons vertically */
+    flex-direction: column; 
 }
 
 .calendar {
-    flex: 1; /* Take up available space */
-    border: 1px solid #ccc; /* Optional: Add a border for visual separation */
-    padding: 20px; /* Add padding for aesthetics */
+    flex: 1; 
+    border: 1px solid #ccc; 
+    padding: 20px; 
 }
 
 .buttons {
-    margin-top: 10px; /* Space between calendar and buttons */
-    display: grid; /* Use CSS Grid */
-    grid-template-columns: repeat(4, 1fr); /* Create 4 equal columns */
-    gap: 10px; /* Space between buttons */
+    /* max-width: 900px; */
+    margin-top: 10px;
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px; 
+}
+
+.buttons button {
+    padding: 10px; /* Ensure grid buttons have uniform padding */
+    font-size: 16px; /* Smaller font size for grid buttons */
+}
+
+.booking-button {
+    margin-top: 20px; /* Adds space between the grid and the submit button */
+    display: flex; /* Center the button */
+    justify-content: center;
+    max-width: inherit;
+}
+
+.submit-button {
+    padding: 10px 30px; 
+  font-size: 20px;  
+  color: rgb(34, 29, 178);  
+  border: 2px solid #3052c5; 
+  
+}
+
+.submit-button:hover {
+    background-color: #c5cfd7;  
+      
 }

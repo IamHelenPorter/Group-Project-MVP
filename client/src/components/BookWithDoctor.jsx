@@ -10,6 +10,9 @@ import { list } from '@chakra-ui/react';
 
 export default function BookWithDoctor() {
 
+    let token = localStorage.getItem("token")
+    
+
     const now = DateTime.now()
 
     const shouldDisableDate = (date) => {
@@ -25,7 +28,7 @@ export default function BookWithDoctor() {
     const [selectedTime, setSelectedTime] = useState(null)
     const [convertedTime, setConvertedTime] = useState(null)
     const [postableAppt, setPostableAppt] = useState(
-        { user_id: 10,
+        {
         doctor_id: doctor_id,
         start_time: convertedTime,
         status: "booked"
@@ -76,7 +79,7 @@ export default function BookWithDoctor() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({postableAppt})
                 })
@@ -134,15 +137,16 @@ export default function BookWithDoctor() {
 
   return (
     <div>
-        <h1 className='header'>Book With Doctor</h1>
+        <h1 className='header'></h1>
             <div className='content'>
             {doctor &&
             <div className='doctor-info'>
-            <img src={doctor[0].image} alt="Image of Doctor" /> 
-            <h2>Dr. {doctor[0].first_name} {doctor[0].last_name} </h2>
-            <h3>{doctor[0].qualifications}</h3>
+            <h1>Dr. {doctor[0].first_name} {doctor[0].last_name} </h1>
+            <img src={doctor[0].image} alt="Image of Doctor" 
+            className='image'/> 
+            <h5>{doctor[0].qualifications}</h5>
             <h3>{doctor[0].speciality}</h3>
-            <h3>{doctor[0].name}</h3>
+            <h2>{doctor[0].name}</h2>
             <h4>{doctor[0].address}</h4>
             </div>
             }
@@ -172,7 +176,7 @@ export default function BookWithDoctor() {
                 {selectedTime && 
                 <div className='booking-button'>
                     <button
-                    className=''
+                    className='submit-button'
                     onClick= {handleSubmitAppt}
                     >
                         Book Appointment with Dr. {doctor[0].last_name} at {selectedTime.hour}:{selectedTime.minute === 0 ? '00' : selectedTime.minute}
