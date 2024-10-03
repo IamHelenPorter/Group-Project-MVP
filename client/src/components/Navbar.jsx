@@ -33,6 +33,12 @@ export default function Navbar() {
                 >
                   Login
                 </Link>
+                <Link
+                aria-current="page"
+                to="/register"
+                >
+                Register
+                </Link>
               </li>
             )}
             {isLoggedIn && (

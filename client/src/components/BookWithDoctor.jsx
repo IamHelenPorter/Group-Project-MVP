@@ -45,14 +45,14 @@ export default function BookWithDoctor() {
     }, [doctor]);
         
     const fetchDoctor = () => {
-        axios.get(`/api/doctor/${doctor_id}/book`)
+        axios.get(`http://localhost:4000/api/doctor/${doctor_id}/book`)
         .then(response => {
           setDoctor(response.data);
         })
      };
 
      const fetchApptsBookedWithDoctor = () => {
-        axios.get(`/api/appointments/doctor/${doctor_id}`)
+        axios.get(`http://localhost:4000/api/appointments/doctor/${doctor_id}`)
         .then(response => {
             setApptsBookedWithDoctor(response.data)
         })
@@ -75,7 +75,7 @@ export default function BookWithDoctor() {
      const handleSubmitAppt = () => {
         const confirmSubmit = window.confirm("Are you sure you want to book this appointment?");
         if (confirmSubmit) {
-            fetch(`/api/appointments`, {
+            fetch(`http://localhost:4000/api/appointments`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

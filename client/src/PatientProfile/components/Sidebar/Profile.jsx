@@ -72,7 +72,7 @@ function Profile({privateData}) {
             name= "USER"
             cursor="pointer"
           onClick={onOpen} // Open modal when avatar is clicked
-        src={userProfile ? userProfile : 'https://img.freepik.com/free-photo/closeup-view-domestic-cat-with-blurred-background_181624-17941.jpg?w=996&t=st=1727842586~exp=1727843186~hmac=4f8dedd753e52005870059c9f32834394367735a82b140c02c3b32b415719849'} 
+        src={userProfile ? userProfile : 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1727932433~exp=1727936033~hmac=9afb7275eaf5d88fdb6dd20ffc26cda822e2601fbe8319cf9da0fc233241aa0a&w=996'} 
       >
         <AvatarBadge bg="brand.blue" boxSize="1em">
           <svg width="0.4em" fill="currentColor" viewBox="0 0 20 20">

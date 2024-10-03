@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Button, Box, Input, VStack, Text } from '@chakra-ui/react';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
+
 
 function HomePage() {
+
+  const { isLoggedIn } = useContext(AuthContext);
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
@@ -35,6 +42,7 @@ function HomePage() {
 
   return (
     <div>
+      
       <h1>Welcome to Our Hospital Portal</h1>
       <p>Search for doctors, hospitals, or specialities</p>
 
@@ -47,7 +55,8 @@ function HomePage() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search doctors, specialities, or hospitals by name"
         />
-        <button type="submit">Search</button>
+        <button className="button" 
+        type="submit">Search</button>
       </form>
 
       {/* Display search results */}
@@ -72,9 +81,20 @@ function HomePage() {
       <button onClick={() => navigate('/speciality')}>View Specialities</button>
       <button onClick={() => navigate('/hospitals')}>View Hospitals</button>
 
+      {isLoggedIn && (
+        <button onClick={() => navigate('/profile')}>Profile</button>
+      )}
+
       {/* Registration/Login Buttons */}
-      <button onClick={() => navigate('/register')}>Register</button>
-      <button onClick={() => navigate('/login')}>Login</button>
+      {!isLoggedIn && (
+        <div>
+        
+        <button onClick={() => navigate('/register')}>Register</button>
+        <button onClick={() => navigate('/login')}>Login</button>
+        </div>
+      )}
+      
+      
     </div>
   );
 }

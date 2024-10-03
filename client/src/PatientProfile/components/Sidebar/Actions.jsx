@@ -23,7 +23,7 @@ export default function Actions() {
 
   const handleClick = () => {
     console.log('button clicked!')
-    navigate("/api/speciality")
+    navigate("/speciality")
   }
 
   return (

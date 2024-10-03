@@ -115,7 +115,7 @@ router.get('/doctor', async (req, res) => {
 
 //HELEN's ENDPOINT FOR BOOKING CALENDAR
 //GET DOCTOR BY ID INCLUDES ALL DOCTOR INFO, PLUS DOCTOR NAME, IMAGE, HOSPITAL NAME, HOSPITAL ADDRESS
-router.get(`/doctor/:doctor_id`, async (req, res) => {
+router.get(`/doctor/:doctor_id/book`, async (req, res) => {
   const doctor_id = req.params.doctor_id; 
   const sql = `SELECT doctor.*, user.first_name, user.last_name, user.image, hospitals.name, hospitals.address 
   FROM doctor LEFT JOIN user ON user.user_id = doctor.user_id 
