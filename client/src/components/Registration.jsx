@@ -46,7 +46,7 @@ function Registration() {
         setError(error.response ? error.response.data.message : 'Registration failed');
       });
 
-      navigate('/profile'); 
+      navigate('/login'); 
   };
 
   const handleLogin = () => {

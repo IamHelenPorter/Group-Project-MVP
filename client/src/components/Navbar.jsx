@@ -1,10 +1,21 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { isLoggedIn, logout } = useContext(AuthContext);
+
   console.log(isLoggedIn);
+
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    auth.logout();
+    navigate("/")
+  };
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -48,7 +59,7 @@ export default function Navbar() {
                     Profile
                   </Link>
                 </li>
-                <li className="nav-item" onClick={() => logout()}>
+                <li className="nav-item" onClick={() => onLogout()}>
                   Logout
                 </li>
               </>

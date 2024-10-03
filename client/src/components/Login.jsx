@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
@@ -27,14 +27,15 @@ function Login() {
   const { username, password } = credentials;
 
   const navigate = useNavigate();
-
-
-  const [error, setError] = useState('');
   
 
     // STEP 3 - CONSUME THE CONTEXT
     const auth = useContext(AuthContext);
     console.log("THIS IS THE AUTH CONTEXT", auth)
+
+    // useEffect(() => {
+    //   navigate("/profile")
+    // },[auth.isLoggedIn])
 
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -45,12 +46,7 @@ function Login() {
       e.preventDefault();
       //  update this function to use the login function from the context
       auth.login(credentials);
-      navigate("/profile")
-    };
-  
-    const logout = () => {
-      auth.logout();
-      navigate("/")
+      // auth.isLoggedIn && navigate("/profile")
     };
 
 

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
-
+import { useNavigate } from 'react-router-dom';
 
 import PrivateRoute from './components/PrivateRoute.jsx';
 import Navbar from './components/Navbar.jsx';
@@ -19,13 +19,13 @@ import HospitalListBySpeciality from './components/HospitalListBySpeciality.jsx'
 import DoctorListBySpecialityAndHospital from './components/DoctorListBySpecialityAndHospital.jsx';
 import BookWithDoctor from './components/BookWithDoctor.jsx';
 
-
-
 import { useState, useContext } from 'react';
 import AuthContext from "./context/AuthContext.js"
 import axios from 'axios';
 
 function App() {
+  const navigate = useNavigate();
+
    // !! converts the value to a boolean
     // if the token is present, isLoggedIn is true, else it is false
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
@@ -42,9 +42,9 @@ function App() {
       //store it locally
       localStorage.setItem("token", data.token);
       
-
       // update the isLoggedIn state
       setIsLoggedIn(true);
+      navigate("/profile")
     } catch (error) {
       console.log(error);
     }
@@ -54,6 +54,7 @@ function App() {
     // remove the token from the local storage
     localStorage.removeItem("token");
     setIsLoggedIn(false);
+    // navigate("/")
   };
 
   const authObj = {
@@ -65,9 +66,7 @@ function App() {
   return (
     <AuthContext.Provider value={authObj}>
       
-      
-      
-    <Router>
+    {/* <Router> */}
     <Navbar/>
       <div>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -100,7 +99,7 @@ function App() {
         </Routes>
         </LocalizationProvider>
       </div>
-    </Router>
+    {/* </Router> */}
     </AuthContext.Provider>
   );
 }
