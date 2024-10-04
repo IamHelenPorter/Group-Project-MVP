@@ -14,10 +14,11 @@ export default function Navbar() {
   const onLogout = () => {
     auth.logout();
     navigate("/")
+   
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <nav className="navbar">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           Home
